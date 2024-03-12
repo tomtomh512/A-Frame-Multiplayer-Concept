@@ -10,6 +10,7 @@ window.onload = function() {
     scene = document.querySelector("a-scene");
     rig = document.getElementById("rig");
     rig.setAttribute("position", {x:0,y:0.5,z:0});
+
     const playerNameInput = document.querySelector("#player-name");
 
     function handleArrowPress() {
@@ -49,7 +50,8 @@ window.onload = function() {
                 let element = playerElements[key];
 
                 // update DOM
-                //element[nameTag].setAttribute("value", characterState.name);
+                element.querySelector("a-text").setAttribute("value", characterState.name);
+
                 element.setAttribute("position",{
                     x: characterState.positionX,
                     y: characterState.positionY,
@@ -95,20 +97,20 @@ window.onload = function() {
                 });
                 characterModel.append(smile);
 
-                // nameTag = document.createElement("a-text");
-                // nameTag.setAttribute("value", addedPlayer.name);
-                // nameTag.setAttribute("color", "black");
-                // nameTag.setAttribute("position",{
-                //     x: 0.5,
-                //     y: 0.9,
-                //     z: 0,
-                // });
-                // nameTag.setAttribute("rotation",{
-                //     x: 0,
-                //     y: rig.getAttribute("rotation").y -180,
-                //     z: 0,
-                // });
-                // characterModel.append(nameTag);
+                nameTag = document.createElement("a-text");
+                nameTag.setAttribute("value", addedPlayer.name);
+                nameTag.setAttribute("color", "black");
+                nameTag.setAttribute("position",{
+                    x: 0.0,
+                    y: 0.25,
+                    z: 0,
+                });
+                nameTag.setAttribute("rotation",{
+                    x: 0,
+                    y: rig.getAttribute("rotation").y - 180,
+                    z: 90,
+                });
+                characterModel.append(nameTag);
 
             playerElements[addedPlayer.id] = characterModel;
             scene.appendChild(characterModel);
@@ -122,6 +124,15 @@ window.onload = function() {
 
         })
 
+        playerNameInput.addEventListener("change", (e) => {
+            const newName = e.target.value;
+            playerNameInput.value = newName;
+            // only update keys given
+            playerRef.update({
+                name: newName,
+            });
+        })
+
     }
 
     firebase.auth().onAuthStateChanged((user) => {
@@ -133,7 +144,7 @@ window.onload = function() {
 
             playerRef.set({
                 id: playerId,
-                name: "player0",
+                name: playerNameInput.value,
                 positionX: rig.getAttribute("position").x,
                 positionY: rig.getAttribute("position").y,
                 positionZ: rig.getAttribute("position").z,
