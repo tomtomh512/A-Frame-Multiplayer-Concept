@@ -84,7 +84,7 @@ window.onload = function() {
             });
 
                 smile = document.createElement("a-box");
-                smile.setAttribute("src", "img_1.png");
+                smile.setAttribute("src", "justin.png");
                 smile.setAttribute("height", 0.3);
                 smile.setAttribute("width", 0.3);
                 smile.setAttribute("depth", 0.3);
