@@ -95,20 +95,20 @@ window.onload = function() {
                 });
                 characterModel.append(smile);
 
-                nameTag = document.createElement("a-text");
-                nameTag.setAttribute("value", addedPlayer.name);
-                nameTag.setAttribute("color", "black");
-                nameTag.setAttribute("position",{
-                    x: 0.5,
-                    y: 0.9,
-                    z: 0,
-                });
-                nameTag.setAttribute("rotation",{
-                    x: 0,
-                    y: rig.getAttribute("rotation").y -180,
-                    z: 0,
-                });
-                characterModel.append(nameTag);
+                // nameTag = document.createElement("a-text");
+                // nameTag.setAttribute("value", addedPlayer.name);
+                // nameTag.setAttribute("color", "black");
+                // nameTag.setAttribute("position",{
+                //     x: 0.5,
+                //     y: 0.9,
+                //     z: 0,
+                // });
+                // nameTag.setAttribute("rotation",{
+                //     x: 0,
+                //     y: rig.getAttribute("rotation").y -180,
+                //     z: 0,
+                // });
+                // characterModel.append(nameTag);
 
             playerElements[addedPlayer.id] = characterModel;
             scene.appendChild(characterModel);
