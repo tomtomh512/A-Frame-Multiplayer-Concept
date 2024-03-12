@@ -1,0 +1,29 @@
+body {
+    background: linear-gradient(180deg, #64BEFF -50%, #6e96ff 69.71%, #2a65ff 150%);
+    display: flex;
+    margin: 0;
+    padding: 50px;
+}
+
+.info {
+    flex: 1;
+    background-color: #1d202d;
+    color: black;
+    padding: 10px;
+    text-align: center;
+}
+
+.info > input {
+    font-size:20pt;
+    width: 95%
+}
+
+.game {
+    flex: 5;
+    height: 600px;
+}
+
+a-scene {
+    height: 100%;
+    width: 100%;
+}
