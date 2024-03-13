@@ -1,14 +1,11 @@
-let scene, rig;
-let character;
-
 window.onload = function() {
     let playerId; // string of who we are logged in as
     let playerRef; // firebase ref
     let players = {}; // local list of state where every character is
     let playerElements = {}; // house player elements
 
-    scene = document.querySelector("a-scene");
-    rig = document.getElementById("rig");
+    let scene = document.querySelector("a-scene");
+    let rig = document.getElementById("rig");
     rig.setAttribute("position", {x:0,y:0.5,z:0});
 
     const playerNameInput = document.querySelector("#player-name");
@@ -86,7 +83,7 @@ window.onload = function() {
             });
 
                 smile = document.createElement("a-box");
-                smile.setAttribute("src", "justin.png");
+                smile.setAttribute("src", "img.png");
                 smile.setAttribute("height", 0.3);
                 smile.setAttribute("width", 0.3);
                 smile.setAttribute("depth", 0.3);
