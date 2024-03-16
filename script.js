@@ -245,6 +245,7 @@ window.onload = function() {
                 name: newName,
             });
         })
+
     }
 
     firebase.auth().onAuthStateChanged((user) => {
