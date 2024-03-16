@@ -14,6 +14,6 @@ input {
 
 a-scene {
     display: inline-block;
-    aspect-ratio: 2 / 1;
-    width: 75vw;
+    /*width: 75vw;*/
+    height: 70vh;
 }
