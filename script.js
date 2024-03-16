@@ -1,5 +1,15 @@
-function getKeyString(x, y, z) {
-    return `${x}x${y}x${z}`;
+function calculateDistance(x1, y1, z1, x2, y2, z2) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const dz = z2 - z1;
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+}
+function sinInDegrees(angleInDegrees) {
+    return Math.sin(angleInDegrees * Math.PI / 180);
+}
+function cosInDegrees(angleInDegrees) {
+    const angleInRadians = angleInDegrees * Math.PI / 180;
+    return Math.cos(angleInRadians);
 }
 
 window.onload = function() {
@@ -31,8 +41,8 @@ window.onload = function() {
     let count = 0; // ain't no way this going over 9007199254740991
     function fire() {
         const {x, y, z} = {x: players[playerId].positionX, y: players[playerId].positionY, z: players[playerId].positionZ}
+        const {rx, ry, rz} = {rx: players[playerId].rotationX, ry: players[playerId].rotationY, rz: players[playerId].rotationZ}
         let uniqueId = playerId + count.toString();
-
         const projectileRef = firebase.database().ref(`projectiles/${uniqueId}`);
 
         projectileRef.set({
@@ -41,9 +51,13 @@ window.onload = function() {
             x,
             y,
             z,
+            rx,
+            ry,
+            rz,
         })
 
         count ++;
+        moveBullet();
     }
 
     function detectCollision() {
@@ -57,24 +71,45 @@ window.onload = function() {
             let y2 = projectiles[projectile].y;
             let z2 = projectiles[projectile].z;
 
-            if (calculateDistance(x1, y1, z1, x2, y2, z2) < 0.1 && playerId != from){
+            // console.log("player coordinates: " + x1 + ", " + y1 + ", " + z1);
+            // console.log("bullet coordinates: " + x2 + ", " + y2 + ", " + z2);
+
+            if (calculateDistance(x1, y1, z1, x2, y2, z2) < 0.1 && playerId !== from){
+                console.log("hi");
+                firebase.database().ref(`projectiles/${projectiles[projectile].id}`).remove();
+            }
+        }
+
+        setTimeout(detectCollision, 100);
+    }
+
+    function moveBullet() {
+        for (let projectile in projectiles){
+            let id = projectiles[projectile].id;
+            let projectileRef = firebase.database().ref(`projectiles/${id}`);
+
+            let dx = sinInDegrees(projectiles[projectile].ry);
+            let dy = sinInDegrees(projectiles[projectile].rx);
+            let dz = cosInDegrees(projectiles[projectile].ry);
+
+            // move
+            projectiles[projectile].x -= dx / 15;
+            projectiles[projectile].y += dy / 15;
+            projectiles[projectile].z -= dz / 15;
+
+            // out of bounds
+            let range = 4
+            if (Math.abs(projectiles[projectile].x) >= range || Math.abs(projectiles[projectile].y) >= range || Math.abs(projectiles[projectile].z) >= range){
                 firebase.database().ref(`projectiles/${projectiles[projectile].id}`).remove();
             }
 
+            projectileRef.set(projectiles[id]);
         }
 
-        setTimeout(detectCollision, 100)
-    }
-
-    function calculateDistance(x1, y1, z1, x2, y2, z2) {
-        const dx = x2 - x1;
-        const dy = y2 - y1;
-        const dz = z2 - z1;
-        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+        setTimeout(moveBullet, 30);
     }
 
     function initGame() {
-
         // when user moves or rotates, works better than keydown idk why
         new KeyPressListener("KeyW", () => handleArrowPress())
         new KeyPressListener("KeyS", () => handleArrowPress())
@@ -86,7 +121,6 @@ window.onload = function() {
         new KeyPressListener("ArrowLeft", () => handleArrowPress())
         new KeyPressListener("ArrowRight", () => handleArrowPress())
         document.addEventListener("mousemove", handleMouseMove);
-
 
         // references to all players and coins
         const allPlayersRef = firebase.database().ref(`players`);
@@ -102,18 +136,17 @@ window.onload = function() {
                 // update DOM
                 element.querySelector("a-text").setAttribute("value", characterState.name);
 
-                element.setAttribute("position",{
+                element.setAttribute("position", {
                     x: characterState.positionX,
                     y: characterState.positionY,
                     z: characterState.positionZ,
                 });
-                element.setAttribute("rotation",{
+                element.setAttribute("rotation", {
                     x: characterState.rotationX,
                     y: characterState.rotationY,
                     z: characterState.rotationZ,
                 });
             }
-            detectCollision();
         })
         // when new node is added
         allPlayersRef.on("child_added", (snapshot) => {
@@ -185,6 +218,7 @@ window.onload = function() {
                     z: projectileState.z,
                 });
             }
+            //detectCollision();
         })
         allProjectilesRef.on("child_added", (snapshot) => {
             const addedProjectile = snapshot.val();
@@ -214,7 +248,6 @@ window.onload = function() {
     }
 
     firebase.auth().onAuthStateChanged((user) => {
-        console.log(user)
         if (user) {
             //You're logged in!
             playerId = user.uid;
