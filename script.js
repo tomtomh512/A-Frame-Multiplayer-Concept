@@ -57,56 +57,48 @@ window.onload = function() {
         })
 
         count ++;
-        moveBullet();
+        moveBullet(uniqueId);
     }
 
-    function detectCollision() {
-        let x1 = players[playerId].positionX;
-        let y1 = players[playerId].positionY;
-        let z1 = players[playerId].positionZ;
+    function moveBullet(key){
+        let id = projectiles[key].id;
+        let from = projectiles[key].from;
+        let projectileRef = firebase.database().ref(`projectiles/${id}`);
+        let dx = sinInDegrees(projectiles[key].ry);
+        let dy = sinInDegrees(projectiles[key].rx);
+        let dz = cosInDegrees(projectiles[key].ry);
 
-        for (let projectile in projectiles){
-            let from = projectiles[projectile].from;
-            let x2 = projectiles[projectile].x;
-            let y2 = projectiles[projectile].y;
-            let z2 = projectiles[projectile].z;
+        // move
+        projectiles[key].x -= dx / 15;
+        projectiles[key].y += dy / 15;
+        projectiles[key].z -= dz / 15;
 
-            // console.log("player coordinates: " + x1 + ", " + y1 + ", " + z1);
-            // console.log("bullet coordinates: " + x2 + ", " + y2 + ", " + z2);
+        projectileRef.set(projectiles[id]);
 
-            if (calculateDistance(x1, y1, z1, x2, y2, z2) < 0.1 && playerId !== from){
-                console.log("hi");
-                firebase.database().ref(`projectiles/${projectiles[projectile].id}`).remove();
+        // ofb and collisions
+        let range = 4;
+        if (Math.abs(projectiles[key].x) >= range || Math.abs(projectiles[key].y) >= range || Math.abs(projectiles[key].z) >= range){
+            firebase.database().ref(`projectiles/${id}`).remove();
+        }
+
+        let x2 = projectiles[key].x;
+        let y2 = projectiles[key].y;
+        let z2 = projectiles[key].z;
+
+        for (let player in players){
+            let x1 = players[player].positionX;
+            let y1 = players[player].positionY;
+            let z1 = players[player].positionZ;
+            let playerId = players[player].id;
+
+            if (calculateDistance(x1, y1, z1, x2, y2, z2) < 0.3 && from !== playerId){
+                firebase.database().ref(`projectiles/${id}`).remove();
             }
         }
 
-        setTimeout(detectCollision, 100);
-    }
-
-    function moveBullet() {
-        for (let projectile in projectiles){
-            let id = projectiles[projectile].id;
-            let projectileRef = firebase.database().ref(`projectiles/${id}`);
-
-            let dx = sinInDegrees(projectiles[projectile].ry);
-            let dy = sinInDegrees(projectiles[projectile].rx);
-            let dz = cosInDegrees(projectiles[projectile].ry);
-
-            // move
-            projectiles[projectile].x -= dx / 15;
-            projectiles[projectile].y += dy / 15;
-            projectiles[projectile].z -= dz / 15;
-
-            // out of bounds
-            let range = 4
-            if (Math.abs(projectiles[projectile].x) >= range || Math.abs(projectiles[projectile].y) >= range || Math.abs(projectiles[projectile].z) >= range){
-                firebase.database().ref(`projectiles/${projectiles[projectile].id}`).remove();
-            }
-
-            projectileRef.set(projectiles[id]);
-        }
-
-        setTimeout(moveBullet, 30);
+        setTimeout(function() {
+            moveBullet(key);
+        }, 30);
     }
 
     function initGame() {
@@ -218,7 +210,6 @@ window.onload = function() {
                     z: projectileState.z,
                 });
             }
-            //detectCollision();
         })
         allProjectilesRef.on("child_added", (snapshot) => {
             const addedProjectile = snapshot.val();
