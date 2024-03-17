@@ -26,79 +26,90 @@ window.onload = function() {
     const playerNameInput = document.querySelector("#player-name");
 
     function handleArrowPress() {
-        players[playerId].positionX = rig.getAttribute("position").x;
-        players[playerId].positionY = rig.getAttribute("position").y;
-        players[playerId].positionZ = rig.getAttribute("position").z;
+        players[playerId].position.x = rig.getAttribute("position").x;
+        players[playerId].position.y = rig.getAttribute("position").y;
+        players[playerId].position.z = rig.getAttribute("position").z;
         playerRef.set(players[playerId]); // causes value listener to fire
     }
     function handleMouseMove() {
-        players[playerId].rotationX = rig.getAttribute("rotation").x;
-        players[playerId].rotationY = rig.getAttribute("rotation").y;
-        players[playerId].rotationZ = rig.getAttribute("rotation").z;
-        playerRef.set(players[playerId]); // causes value listener to createBullet
+        players[playerId].rotation.x = rig.getAttribute("rotation").x;
+        players[playerId].rotation.y = rig.getAttribute("rotation").y;
+        players[playerId].rotation.z = rig.getAttribute("rotation").z;
+        playerRef.set(players[playerId]);
     }
 
     let count = 0; // ain't no way this going over 9007199254740991
     function createBullet() {
-        const {x, y, z} = {x: players[playerId].positionX, y: players[playerId].positionY, z: players[playerId].positionZ}
-        const {rx, ry, rz} = {rx: players[playerId].rotationX, ry: players[playerId].rotationY, rz: players[playerId].rotationZ}
+        let position = {
+            x: players[playerId].position.x,
+            y: players[playerId].position.y,
+            z: players[playerId].position.z
+        }
+        let rotation = {
+            x: players[playerId].rotation.x,
+            y: players[playerId].rotation.y,
+            z: players[playerId].rotation.z
+        }
         let uniqueId = playerId + count.toString();
         const projectileRef = firebase.database().ref(`projectiles/${uniqueId}`);
 
         projectileRef.set({
             id: uniqueId,
             from: playerId,
-            x,
-            y,
-            z,
-            rx,
-            ry,
-            rz,
+            position,
+            rotation,
         })
 
         count ++;
         moveBullet(uniqueId);
     }
 
-    function moveBullet(key){
-        let id = projectiles[key].id;
-        let from = projectiles[key].from;
+    function moveBullet(projectileKey) {
+        let currentProjectile = projectiles[projectileKey];
+        let id = currentProjectile.id;
         let projectileRef = firebase.database().ref(`projectiles/${id}`);
-        let dx = sinInDegrees(projectiles[key].ry);
-        let dy = sinInDegrees(projectiles[key].rx);
-        let dz = cosInDegrees(projectiles[key].ry);
 
-        // move
-        projectiles[key].x -= dx / 15;
-        projectiles[key].y += dy / 15;
-        projectiles[key].z -= dz / 15;
+        // velocity
+        let magnitude = 15;
+        let dx = sinInDegrees(currentProjectile.rotation.y) / magnitude;
+        let dy = sinInDegrees(currentProjectile.rotation.x) / magnitude;
+        let dz = cosInDegrees(currentProjectile.rotation.y) / magnitude;
 
+        // move, direct set
+        currentProjectile.position.x -= dx;
+        currentProjectile.position.y += dy;
+        currentProjectile.position.z -= dz;
         projectileRef.set(projectiles[id]);
 
-        // ofb and collisions
+        // out of bounds and collisions
         let range = 4;
-        if (Math.abs(projectiles[key].x) >= range || Math.abs(projectiles[key].y) >= range || Math.abs(projectiles[key].z) >= range){
+        if (Math.abs(currentProjectile.position.x) >= range || Math.abs(currentProjectile.position.y) >= range || Math.abs(currentProjectile.position.z) >= range) {
             firebase.database().ref(`projectiles/${id}`).remove();
         }
 
-        let x2 = projectiles[key].x;
-        let y2 = projectiles[key].y;
-        let z2 = projectiles[key].z;
+        let projectileX = currentProjectile.position.x;
+        let projectileY = currentProjectile.position.y;
+        let projectileZ = currentProjectile.position.z;
 
-        for (let player in players){
-            let x1 = players[player].positionX;
-            let y1 = players[player].positionY;
-            let z1 = players[player].positionZ;
-            let playerId = players[player].id;
+        for (let playerKey in players) {
+            let currentPlayer = players[playerKey];
+            let currentPlayerId = currentPlayer.id;
+            let playerRef = firebase.database().ref(`players/${currentPlayerId}`);
+            let playerX = currentPlayer.position.x;
+            let playerY = currentPlayer.position.y;
+            let playerZ = currentPlayer.position.z;
 
-            if (calculateDistance(x1, y1, z1, x2, y2, z2) < 0.3 && from !== playerId){
+            if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.3 && currentProjectile.from !== currentPlayerId) {
                 firebase.database().ref(`projectiles/${id}`).remove();
+                playerRef.update({
+                    health: currentPlayer.health - 1,
+                })
             }
-        }
 
-        setTimeout(function() {
-            moveBullet(key);
-        }, 30);
+            setTimeout(function () {
+                moveBullet(projectileKey);
+            }, 30);
+        }
     }
 
     function initGame() {
@@ -107,11 +118,11 @@ window.onload = function() {
         new KeyPressListener("KeyS", () => handleArrowPress());
         new KeyPressListener("KeyA", () => handleArrowPress());
         new KeyPressListener("KeyD", () => handleArrowPress());
-        new KeyHoldListener("Space", () => createBullet());
         new KeyPressListener("ArrowUp", () => handleArrowPress());
         new KeyPressListener("ArrowDown", () => handleArrowPress());
         new KeyPressListener("ArrowLeft", () => handleArrowPress());
         new KeyPressListener("ArrowRight", () => handleArrowPress());
+        new KeyHoldListener("Space", () => createBullet());
         document.addEventListener("mousemove", handleMouseMove);
 
         // references to all players and coins
@@ -125,18 +136,15 @@ window.onload = function() {
                 const characterState = players[key];
                 let element = playerElements[key];
 
-                // update DOM
-                element.querySelector("a-text").setAttribute("value", characterState.name);
-
                 element.setAttribute("position", {
-                    x: characterState.positionX,
-                    y: characterState.positionY,
-                    z: characterState.positionZ,
+                    x: characterState.position.x,
+                    y: characterState.position.y,
+                    z: characterState.position.z,
                 });
                 element.setAttribute("rotation", {
-                    x: characterState.rotationX,
-                    y: characterState.rotationY,
-                    z: characterState.rotationZ,
+                    x: characterState.rotation.x,
+                    y: characterState.rotation.y,
+                    z: characterState.rotation.z,
                 });
             }
         })
@@ -160,7 +168,7 @@ window.onload = function() {
                 z: addedPlayer.rotationZ,
             });
 
-                smile = document.createElement("a-box");
+                let smile = document.createElement("a-box");
                 smile.setAttribute("src", "img.png");
                 smile.setAttribute("height", 0.295);
                 smile.setAttribute("width", 0.295);
@@ -172,30 +180,14 @@ window.onload = function() {
                 });
                 characterModel.append(smile);
 
-                nameTag = document.createElement("a-text");
-                nameTag.setAttribute("value", addedPlayer.name);
-                nameTag.setAttribute("color", "black");
-                nameTag.setAttribute("position",{
-                    x: 0.0,
-                    y: 0.25,
-                    z: 0,
-                });
-                nameTag.setAttribute("rotation",{
-                    x: 0,
-                    y: rig.getAttribute("rotation").y - 180,
-                    z: 90,
-                });
-                characterModel.append(nameTag);
-
             playerElements[addedPlayer.id] = characterModel;
             scene.appendChild(characterModel);
         })
         // remove when disconnect
         allPlayersRef.on("child_removed", (snapshot) => {
-            const removedKey = snapshot.val().id;
-            scene.remove(playerElements[removedKey]);
-            delete playerElements[removedKey];
-
+            const id = snapshot.val().id;
+            scene.remove(playerElements[id]);
+            delete playerElements[id];
         })
 
         allProjectilesRef.on("value", (snapshot) => {
@@ -205,9 +197,9 @@ window.onload = function() {
                 let element = projectileElements[key];
 
                 element.setAttribute("position",{
-                    x: projectileState.x,
-                    y: projectileState.y,
-                    z: projectileState.z,
+                    x: projectileState.position.x,
+                    y: projectileState.position.y,
+                    z: projectileState.position.z,
                 });
             }
         })
@@ -222,9 +214,9 @@ window.onload = function() {
             scene.appendChild(projectileModel);
         })
         allProjectilesRef.on("child_removed", (snapshot) => {
-            const key = snapshot.val();
-            scene.remove(projectileElements[key.id]);
-            delete projectileElements[key];
+            const id = snapshot.val().id;
+            scene.remove(projectileElements[id]);
+            delete projectileElements[id];
         })
 
         // name tag change
@@ -244,16 +236,24 @@ window.onload = function() {
             // logged in
             playerId = user.uid;
             playerRef = firebase.database().ref(`players/${playerId}`);
+            let position = {
+                x: rig.getAttribute("position").x,
+                y: rig.getAttribute("position").y,
+                z: rig.getAttribute("position").z,
+            }
+
+            let rotation = {
+                x: rig.getAttribute("rotation").x,
+                y: rig.getAttribute("rotation").y,
+                z: rig.getAttribute("rotation").z,
+            }
 
             playerRef.set({
                 id: playerId,
                 name: playerNameInput.value,
-                positionX: rig.getAttribute("position").x,
-                positionY: rig.getAttribute("position").y,
-                positionZ: rig.getAttribute("position").z,
-                rotationX: rig.getAttribute("rotation").x,
-                rotationY: rig.getAttribute("rotation").y,
-                rotationZ: rig.getAttribute("rotation").z,
+                health: 100,
+                position,
+                rotation,
             })
 
             //Remove me from Firebase when I disconnect
