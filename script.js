@@ -35,11 +35,11 @@ window.onload = function() {
         players[playerId].rotationX = rig.getAttribute("rotation").x;
         players[playerId].rotationY = rig.getAttribute("rotation").y;
         players[playerId].rotationZ = rig.getAttribute("rotation").z;
-        playerRef.set(players[playerId]); // causes value listener to fire
+        playerRef.set(players[playerId]); // causes value listener to createBullet
     }
 
     let count = 0; // ain't no way this going over 9007199254740991
-    function fire() {
+    function createBullet() {
         const {x, y, z} = {x: players[playerId].positionX, y: players[playerId].positionY, z: players[playerId].positionZ}
         const {rx, ry, rz} = {rx: players[playerId].rotationX, ry: players[playerId].rotationY, rz: players[playerId].rotationZ}
         let uniqueId = playerId + count.toString();
@@ -103,15 +103,15 @@ window.onload = function() {
 
     function initGame() {
         // when user moves or rotates, works better than keydown idk why
-        new KeyPressListener("KeyW", () => handleArrowPress())
-        new KeyPressListener("KeyS", () => handleArrowPress())
-        new KeyPressListener("KeyA", () => handleArrowPress())
-        new KeyPressListener("KeyD", () => handleArrowPress())
-        new KeyPressListener("Space", () => fire())
-        new KeyPressListener("ArrowUp", () => handleArrowPress())
-        new KeyPressListener("ArrowDown", () => handleArrowPress())
-        new KeyPressListener("ArrowLeft", () => handleArrowPress())
-        new KeyPressListener("ArrowRight", () => handleArrowPress())
+        new KeyPressListener("KeyW", () => handleArrowPress());
+        new KeyPressListener("KeyS", () => handleArrowPress());
+        new KeyPressListener("KeyA", () => handleArrowPress());
+        new KeyPressListener("KeyD", () => handleArrowPress());
+        new KeyHoldListener("Space", () => createBullet());
+        new KeyPressListener("ArrowUp", () => handleArrowPress());
+        new KeyPressListener("ArrowDown", () => handleArrowPress());
+        new KeyPressListener("ArrowLeft", () => handleArrowPress());
+        new KeyPressListener("ArrowRight", () => handleArrowPress());
         document.addEventListener("mousemove", handleMouseMove);
 
         // references to all players and coins
@@ -241,7 +241,7 @@ window.onload = function() {
 
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-            //You're logged in!
+            // logged in
             playerId = user.uid;
             playerRef = firebase.database().ref(`players/${playerId}`);
 
@@ -262,14 +262,13 @@ window.onload = function() {
             //Begin the game now that we are signed in
             initGame();
         } else {
-            //You're logged out.
+            // logged out
         }
     })
 
     firebase.auth().signInAnonymously().catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
-        // ...
         console.log(errorCode, errorMessage);
     });
 
