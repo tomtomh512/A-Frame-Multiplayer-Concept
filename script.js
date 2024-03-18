@@ -89,15 +89,11 @@ window.onload = function() {
             let dz = cosInDegrees(currentProjectile.rotation.y);
 
             // move, direct set
-            let magnitude = 100; //more is slower, laggier
-            let timeout = 30;
+            let magnitude = 30; //smoothness, more is slower, laggier, also affects speed so balance
+            let timeout = 10; // speed, lower - faster
             currentProjectile.position.x -= dx / magnitude;
             currentProjectile.position.y += dy / magnitude;
             currentProjectile.position.z -= dz / magnitude;
-            //
-            // currentProjectile.position.x = currentProjectile.position.x - (dx / magnitude);
-            // currentProjectile.position.y = currentProjectile.position.y + (dy / magnitude);
-            // currentProjectile.position.z = currentProjectile.position.z - (dz / magnitude);
             projectileRef.set(projectiles[id]);
 
             // out of bounds and collisions
@@ -130,11 +126,11 @@ window.onload = function() {
                     firebase.database().ref(`projectiles/${id}`).remove();
                     gotHit(currentPlayerId);
                 }
-
-                setTimeout(function () {
-                    moveBullet(id);
-                }, timeout);
             }
+
+            setTimeout(function () {
+                moveBullet(id);
+            }, timeout);
         }
     }
 
@@ -147,7 +143,7 @@ window.onload = function() {
 
 
         players[key].health = players[key].health - 1;
-        //firebase.database().ref(`players/${players[key].id}`).set(players[players[key].id]);
+        firebase.database().ref(`players/${players[key].id}`).set(players[players[key].id]);
     }
 
     function initGame() {
