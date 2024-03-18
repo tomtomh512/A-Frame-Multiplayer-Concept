@@ -122,28 +122,34 @@ window.onload = function() {
                 //let infoTagRef = firebase.database().ref(`infoTags/${currentPlayerId}`);
 
                 if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.3 && currentProjectile.from !== currentPlayerId) {
-                    //gotHit(currentPlayerId);
                     firebase.database().ref(`projectiles/${id}`).remove();
                     gotHit(currentPlayerId);
+                    console.log("After2: " + currentPlayer.health);
+                    break;
                 }
             }
 
-            setTimeout(function () {
-                moveBullet(id);
-            }, timeout);
+            for (let playerKey in players){
+                let currentPlayer = players[playerKey];
+                console.log("After3: " + currentPlayer.id + ": " + currentPlayer.health);
+            }
+
+            setTimeout(
+                function () { moveBullet(id) },
+                timeout
+            );
         }
     }
 
     function gotHit(key){
-        //let hitPlayer = players[key];
-        //let hitPlayerId = hitPlayer.id;
-        //let hitPlayerRef = firebase.database().ref(`players/${players[key].id}`);
+        let playerHit = players[key];
+        let playerHitId = playerHit.id;
+        let playerHitRef = firebase.database().ref(`players/${playerHitId}`);
 
-        // console.log(players[key].health + ", " + (players[key].health - 1));
-
-
-        players[key].health = players[key].health - 1;
-        firebase.database().ref(`players/${players[key].id}`).set(players[players[key].id]);
+        console.log("Before: " + playerHit.health);
+        playerHit.health --;
+        console.log("After: " + playerHit.health);
+        playerHitRef.set(players[playerHitId]);
     }
 
     function initGame() {
@@ -172,6 +178,8 @@ window.onload = function() {
             for (const key in players) {
                 const characterState = players[key];
                 let element = playerElements[key];
+
+                console.log("After4: " + characterState.id + ": " + characterState.health);
 
                 element.setAttribute("position", {
                     x: characterState.position.x,
