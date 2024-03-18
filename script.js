@@ -114,7 +114,6 @@ window.onload = function() {
             for (let playerKey in players) {
                 let currentPlayer = players[playerKey];
                 let currentPlayerId = currentPlayer.id;
-                let currentplayerRef = firebase.database().ref(`players/${currentPlayerId}`);
                 let playerX = currentPlayer.position.x;
                 let playerY = currentPlayer.position.y;
                 let playerZ = currentPlayer.position.z;
@@ -124,14 +123,8 @@ window.onload = function() {
                 if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.3 && currentProjectile.from !== currentPlayerId) {
                     firebase.database().ref(`projectiles/${id}`).remove();
                     gotHit(currentPlayerId);
-                    console.log("After2: " + currentPlayer.health);
                     break;
                 }
-            }
-
-            for (let playerKey in players){
-                let currentPlayer = players[playerKey];
-                console.log("After3: " + currentPlayer.id + ": " + currentPlayer.health);
             }
 
             setTimeout(
@@ -146,9 +139,7 @@ window.onload = function() {
         let playerHitId = playerHit.id;
         let playerHitRef = firebase.database().ref(`players/${playerHitId}`);
 
-        console.log("Before: " + playerHit.health);
         playerHit.health --;
-        console.log("After: " + playerHit.health);
         playerHitRef.set(players[playerHitId]);
     }
 
@@ -178,8 +169,6 @@ window.onload = function() {
             for (const key in players) {
                 const characterState = players[key];
                 let element = playerElements[key];
-
-                console.log("After4: " + characterState.id + ": " + characterState.health);
 
                 element.setAttribute("position", {
                     x: characterState.position.x,
