@@ -80,6 +80,7 @@ window.onload = function() {
     function moveBullet(projectileKey) {
         let currentProjectile = projectiles[projectileKey];
         if (currentProjectile !== undefined) {
+            let flag = false; // prevents setTimeout from running again after bullet is removed
             let id = currentProjectile.id;
             let projectileRef = firebase.database().ref(`projectiles/${id}`);
 
@@ -114,33 +115,33 @@ window.onload = function() {
             for (let playerKey in players) {
                 let currentPlayer = players[playerKey];
                 let currentPlayerId = currentPlayer.id;
+                let currentPlayerRef = firebase.database().ref(`players/${currentPlayerId}`);
                 let playerX = currentPlayer.position.x;
                 let playerY = currentPlayer.position.y;
                 let playerZ = currentPlayer.position.z;
 
                 //let infoTagRef = firebase.database().ref(`infoTags/${currentPlayerId}`);
 
+
                 if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.3 && currentProjectile.from !== currentPlayerId) {
                     firebase.database().ref(`projectiles/${id}`).remove();
-                    gotHit(currentPlayerId);
+                    currentPlayerRef.update({
+                        health: currentPlayer.health - 1,
+                    })
+
+                    flag = true;
                     break;
                 }
             }
 
-            setTimeout(
-                function () { moveBullet(id) },
-                timeout
-            );
+
+            if (flag == false){
+                setTimeout(
+                    function () { moveBullet(id) },
+                    timeout
+                );
+            }
         }
-    }
-
-    function gotHit(key){
-        let playerHit = players[key];
-        let playerHitId = playerHit.id;
-        let playerHitRef = firebase.database().ref(`players/${playerHitId}`);
-
-        playerHit.health --;
-        playerHitRef.set(players[playerHitId]);
     }
 
     function initGame() {
@@ -160,7 +161,7 @@ window.onload = function() {
         const allPlayersRef = firebase.database().ref(`players`);
         const allProjectilesRef = firebase.database().ref(`projectiles`);
 
-        // when changes are made
+        // when changes are made DOM
         // when new node is added
         // remove when disconnect
 
@@ -255,13 +256,15 @@ window.onload = function() {
             scene.remove(projectileElements[id]);
             delete projectileElements[id];
         })
+
     }
 
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-            // logged in
+
             playerId = user.uid;
             playerRef = firebase.database().ref(`players/${playerId}`);
+            let health = 100;
             let position = {
                 x: rig.getAttribute("position").x,
                 y: rig.getAttribute("position").y,
@@ -276,12 +279,11 @@ window.onload = function() {
             playerRef.set({
                 id: playerId,
                 name: playerNameInput.value,
-                health: 10,
+                health,
                 position,
                 rotation,
             })
 
-            //Remove me from Firebase when I disconnect
             playerRef.onDisconnect().remove();
 
             //Begin the game now that we are signed in
