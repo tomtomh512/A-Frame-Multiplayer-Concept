@@ -28,6 +28,7 @@ window.onload = function() {
     let playerElements = {}; // house player elements
     let projectiles = {};
     let projectileElements = {};
+    let nameTagAngles = {};
 
     let scene = document.querySelector("a-scene");
     let rig = document.getElementById("rig");
@@ -146,23 +147,19 @@ window.onload = function() {
         }
     }
     function updateInfoTag() {
-        for (let key in infoTags){
-            let currentInfoTag = infoTags[key];
-            if (currentInfoTag !== undefined){
-                let id = currentInfoTag.id;
-                let infoTagRef = firebase.database().ref(`infoTags/${id}`);
-                let tagX = currentInfoTag.position.x;
-                let tagZ = currentInfoTag.position.z;
+        for (let key in players){
+            let currentPlayer = players[key];
+            if (currentPlayer !== undefined && key !== playerId){
+                let id = currentPlayer.id;
+                let currentPlayerRef = firebase.database().ref(`players/${id}`);
+                let tagX = currentPlayer.position.x;
+                let tagZ = currentPlayer.position.z;
 
-                let playerX = players[playerId].position.x;
-                let playerZ = players[playerId].position.z;
+                let userX = players[playerId].position.x;
+                let userZ = players[playerId].position.z;
 
-                infoTags[id].position.x = players[id].position.x;
-                infoTags[id].position.y = players[id].position.y;
-                infoTags[id].position.z = players[id].position.z;
-
-                let longitude = playerX - tagX;
-                let latitude = playerZ - tagZ;
+                let longitude = userX - tagX;
+                let latitude = userZ - tagZ;
 
                 let angle = 0;
                 if (longitude !== 0 && latitude !== 0){
@@ -173,11 +170,11 @@ window.onload = function() {
                     }
                 }
 
-                infoTags[key].rotation.y = angle;
-                infoTagRef.set(infoTags[key]);
+                nameTagAngles[key] = angle;
+                playerRef.set(players[playerId]);
             }
         }
-        setTimeout(updateInfoTag, 30);
+        setTimeout(updateInfoTag, 10);
     }
 
 
@@ -208,8 +205,19 @@ window.onload = function() {
                 const characterState = players[key];
                 let element = playerElements[key];
 
+                if (key === playerId){
+                    document.getElementById("currentHealth").innerHTML = (characterState.health).toString();
+                }
+
                 if (key !== playerId){
-                    element.querySelector('a-text').setAttribute("value", characterState.name);
+                    element.querySelector('a-entity').setAttribute("rotation", {
+                        x: 0,
+                        y: nameTagAngles[key],
+                        z: 0
+                    })
+                    element.querySelector('a-entity').querySelector('#name').setAttribute("value", characterState.name);
+                    element.querySelector('a-entity').querySelector('#health').setAttribute("value", characterState.health + "%");
+
                 }
 
                 element.setAttribute("position", {
@@ -217,7 +225,7 @@ window.onload = function() {
                     y: characterState.position.y,
                     z: characterState.position.z,
                 });
-                element.setAttribute("rotation", {
+                element.querySelector('a-box').setAttribute("rotation", {
                     x: characterState.rotation.x,
                     y: characterState.rotation.y,
                     z: characterState.rotation.z,
@@ -227,49 +235,70 @@ window.onload = function() {
         allPlayersRef.on("child_added", (snapshot) => {
             const addedPlayer = snapshot.val();
 
+            const characterEntity = document.createElement("a-entity");
+            characterEntity.setAttribute("position",{
+                x: addedPlayer.position.x,
+                y: addedPlayer.position.y,
+                z: addedPlayer.position.z,
+            });
+
             const characterModel = document.createElement("a-box");
             characterModel.setAttribute("height", 0.5);
             characterModel.setAttribute("width", 0.5);
             characterModel.setAttribute("depth", 0.5);
             characterModel.setAttribute("color","white");
-            characterModel.setAttribute("position",{
-                x: addedPlayer.position.x,
-                y: addedPlayer.position.y,
-                z: addedPlayer.position.z,
-            });
+            characterModel.setAttribute("shader","flat");
             characterModel.setAttribute("rotation",{
                 x: addedPlayer.rotation.x,
                 y: addedPlayer.rotation.y,
                 z: addedPlayer.rotation.z,
             });
 
+            let smile = document.createElement("a-box");
+            smile.setAttribute("src", "img_1.png");
+            smile.setAttribute("height", 0.495);
+            smile.setAttribute("width", 0.495);
+            smile.setAttribute("depth", 0.495);
+            smile.setAttribute("shader","flat");
+            smile.setAttribute("position",{
+                x: 0,
+                y: 0,
+                z: -0.005,
+            });
+
+            characterModel.append(smile);
+            characterEntity.append(characterModel)
+
             if (addedPlayer.id !== playerId) {
-                let name = document.createElement("a-text");
-                name.setAttribute("id", "name");
-                name.setAttribute("value", addedPlayer.name);
-                name.setAttribute("color", "black");
-                name.setAttribute("position", {
-                    x: -0.3,
-                    y: 0.45,
-                    z: 0,
-                });
-                characterModel.append(name);
+                let infoTagEntity = document.createElement("a-entity");
+
+                    let name = document.createElement("a-text");
+                    name.setAttribute("id", "name");
+                    name.setAttribute("value", addedPlayer.name);
+                    name.setAttribute("color", "black");
+                    name.setAttribute("position", {
+                        x: -0.3,
+                        y: 0.675,
+                        z: 0,
+                    });
+                    infoTagEntity.append(name);
+
+                    let health = document.createElement("a-text");
+                    health.setAttribute("id", "health");
+                    health.setAttribute("value", addedPlayer.health + "%");
+                    health.setAttribute("color", "black");
+                    health.setAttribute("position", {
+                        x: -0.3,
+                        y: 0.45,
+                        z: 0,
+                    });
+                    infoTagEntity.append(health);
+
+                characterEntity.append(infoTagEntity);
             }
 
-                let smile = document.createElement("a-box");
-                smile.setAttribute("src", "img.png");
-                smile.setAttribute("height", 0.495);
-                smile.setAttribute("width", 0.495);
-                smile.setAttribute("depth", 0.495);
-                smile.setAttribute("position",{
-                    x: 0,
-                    y: 0,
-                    z: -0.005,
-                });
-                characterModel.append(smile);
-
-            playerElements[addedPlayer.id] = characterModel;
-            scene.appendChild(characterModel);
+            playerElements[addedPlayer.id] = characterEntity;
+            scene.appendChild(characterEntity);
         })
         allPlayersRef.on("child_removed", (snapshot) => {
             const id = snapshot.val().id;
@@ -321,8 +350,7 @@ window.onload = function() {
             });
         })
 
-
-        //updateInfoTag();
+        updateInfoTag();
     }
 
     firebase.auth().onAuthStateChanged((user) => {

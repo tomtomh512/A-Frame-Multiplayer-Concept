@@ -3,6 +3,13 @@ body {
     margin: 0;
     padding: 10px 50px;
     text-align: center;
+    font-size:20pt;
+    color: white;
+    font-family: "Arial";
+}
+
+div{
+    margin: 10px;
 }
 
 input {
