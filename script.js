@@ -31,7 +31,11 @@ window.onload = function() {
 
     let scene = document.querySelector("a-scene");
     let rig = document.getElementById("rig");
-    rig.setAttribute("position", {x:0,y:0.5,z:0});
+    rig.setAttribute("position", {
+        x: Math.random() * (3.25 - (-3.25)) + (-3.25),
+        y: 0.5,
+        z: Math.random() * (3.25 - (-3.25)) + (-3.25)
+    });
     const playerNameInput = document.querySelector("#player-name");
 
     function handleArrowPress() {
@@ -91,7 +95,7 @@ window.onload = function() {
 
             // move, direct set
             let magnitude = 30; //smoothness, more is slower, laggier, also affects speed so balance
-            let timeout = 10; // speed, lower - faster
+            let timeout = 5; // speed, lower - faster
             currentProjectile.position.x -= dx / magnitude;
             currentProjectile.position.y += dy / magnitude;
             currentProjectile.position.z -= dz / magnitude;
@@ -120,11 +124,9 @@ window.onload = function() {
                 let playerY = currentPlayer.position.y;
                 let playerZ = currentPlayer.position.z;
 
-                //let infoTagRef = firebase.database().ref(`infoTags/${currentPlayerId}`);
-
-
-                if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.3 && currentProjectile.from !== currentPlayerId) {
+                if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.25 && currentProjectile.from !== currentPlayerId) {
                     firebase.database().ref(`projectiles/${id}`).remove();
+
                     currentPlayerRef.update({
                         health: currentPlayer.health - 1,
                     })
@@ -143,6 +145,41 @@ window.onload = function() {
             }
         }
     }
+    function updateInfoTag() {
+        for (let key in infoTags){
+            let currentInfoTag = infoTags[key];
+            if (currentInfoTag !== undefined){
+                let id = currentInfoTag.id;
+                let infoTagRef = firebase.database().ref(`infoTags/${id}`);
+                let tagX = currentInfoTag.position.x;
+                let tagZ = currentInfoTag.position.z;
+
+                let playerX = players[playerId].position.x;
+                let playerZ = players[playerId].position.z;
+
+                infoTags[id].position.x = players[id].position.x;
+                infoTags[id].position.y = players[id].position.y;
+                infoTags[id].position.z = players[id].position.z;
+
+                let longitude = playerX - tagX;
+                let latitude = playerZ - tagZ;
+
+                let angle = 0;
+                if (longitude !== 0 && latitude !== 0){
+                    if (latitude > 0){
+                        angle = atanInDegrees(longitude, latitude);
+                    } else if (latitude < 0){
+                        angle = 180 + atanInDegrees(longitude, latitude);
+                    }
+                }
+
+                infoTags[key].rotation.y = angle;
+                infoTagRef.set(infoTags[key]);
+            }
+        }
+        setTimeout(updateInfoTag, 30);
+    }
+
 
     function initGame() {
         // when user moves or rotates, works better than keydown idk why
@@ -171,6 +208,10 @@ window.onload = function() {
                 const characterState = players[key];
                 let element = playerElements[key];
 
+                if (key !== playerId){
+                    element.querySelector('a-text').setAttribute("value", characterState.name);
+                }
+
                 element.setAttribute("position", {
                     x: characterState.position.x,
                     y: characterState.position.y,
@@ -187,9 +228,9 @@ window.onload = function() {
             const addedPlayer = snapshot.val();
 
             const characterModel = document.createElement("a-box");
-            characterModel.setAttribute("height", 0.33);
-            characterModel.setAttribute("width", 0.33);
-            characterModel.setAttribute("depth", 0.33);
+            characterModel.setAttribute("height", 0.5);
+            characterModel.setAttribute("width", 0.5);
+            characterModel.setAttribute("depth", 0.5);
             characterModel.setAttribute("color","white");
             characterModel.setAttribute("position",{
                 x: addedPlayer.position.x,
@@ -202,17 +243,30 @@ window.onload = function() {
                 z: addedPlayer.rotation.z,
             });
 
-                // let smile = document.createElement("a-box");
-                // smile.setAttribute("src", "img.png");
-                // smile.setAttribute("height", 0.295);
-                // smile.setAttribute("width", 0.295);
-                // smile.setAttribute("depth", 0.295);
-                // smile.setAttribute("position",{
-                //     x: 0,
-                //     y: 0,
-                //     z: -0.02,
-                // });
-                // characterModel.append(smile);
+            if (addedPlayer.id !== playerId) {
+                let name = document.createElement("a-text");
+                name.setAttribute("id", "name");
+                name.setAttribute("value", addedPlayer.name);
+                name.setAttribute("color", "black");
+                name.setAttribute("position", {
+                    x: -0.3,
+                    y: 0.45,
+                    z: 0,
+                });
+                characterModel.append(name);
+            }
+
+                let smile = document.createElement("a-box");
+                smile.setAttribute("src", "img.png");
+                smile.setAttribute("height", 0.495);
+                smile.setAttribute("width", 0.495);
+                smile.setAttribute("depth", 0.495);
+                smile.setAttribute("position",{
+                    x: 0,
+                    y: 0,
+                    z: -0.005,
+                });
+                characterModel.append(smile);
 
             playerElements[addedPlayer.id] = characterModel;
             scene.appendChild(characterModel);
@@ -257,6 +311,18 @@ window.onload = function() {
             delete projectileElements[id];
         })
 
+        // name tag change
+        playerNameInput.addEventListener("change", (e) => {
+            const newName = e.target.value;
+            playerNameInput.value = newName;
+            // only update keys given
+            playerRef.update({
+                name: newName,
+            });
+        })
+
+
+        //updateInfoTag();
     }
 
     firebase.auth().onAuthStateChanged((user) => {
