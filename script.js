@@ -132,6 +132,10 @@ window.onload = function() {
                         health: currentPlayer.health - 1,
                     })
 
+                    if (currentPlayer.health <= 0){
+                        scene.remove(playerElements[currentPlayerId]);
+                    }
+
                     flag = true;
                     break;
                 }
@@ -325,17 +329,20 @@ window.onload = function() {
             const projectileModel = document.createElement("a-cylinder");
             projectileModel.setAttribute("radius", 0.05);
             projectileModel.setAttribute("height", 0.05);
+            projectileModel.setAttribute("shader","flat");
             projectileModel.setAttribute("color", "#1C2F22");
 
                 const rice = document.createElement("a-cylinder");
                 rice.setAttribute("radius", 0.045);
                 rice.setAttribute("height", 0.055);
+                rice.setAttribute("shader","flat");
                 rice.setAttribute("color", "white");
                 projectileModel.append(rice)
 
                 const stuff = document.createElement("a-cylinder");
                 stuff.setAttribute("radius", 0.02);
                 stuff.setAttribute("height", 0.06);
+                stuff.setAttribute("shader","flat");
                 stuff.setAttribute("color", "#DA8463");
                 projectileModel.append(stuff)
 
@@ -346,9 +353,9 @@ window.onload = function() {
                 z: addedProjectile.position.z,
             });
             projectileModel.setAttribute("rotation",{
-                x: 0,
-                y: 0,
-                z: 90,
+                x: rig.getAttribute("rotation").x - 90,
+                y: rig.getAttribute("rotation").y,
+                z: rig.getAttribute("rotation").z,
             });
 
             projectileElements[addedProjectile.id] = projectileModel;
