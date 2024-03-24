@@ -41,6 +41,7 @@ window.onload = function() {
 
     function handleArrowPress() {
         if (players[playerId] !== undefined) {
+
             players[playerId].position.x = rig.getAttribute("position").x;
             players[playerId].position.y = rig.getAttribute("position").y;
             players[playerId].position.z = rig.getAttribute("position").z;
@@ -59,14 +60,14 @@ window.onload = function() {
     let count = 0; // ain't no way this going over 9007199254740991
     function createBullet() {
         let position = {
-            x: players[playerId].position.x,
-            y: players[playerId].position.y,
-            z: players[playerId].position.z
+            x: rig.getAttribute("position").x,
+            y: rig.getAttribute("position").y,
+            z: rig.getAttribute("position").z,
         }
         let rotation = {
-            x: players[playerId].rotation.x,
-            y: players[playerId].rotation.y,
-            z: players[playerId].rotation.z
+            x: rig.getAttribute("rotation").x,
+            y: rig.getAttribute("rotation").y,
+            z: rig.getAttribute("rotation").z,
         }
         let uniqueId = playerId + count.toString();
         const projectileRef = firebase.database().ref(`projectiles/${uniqueId}`);
@@ -128,16 +129,21 @@ window.onload = function() {
                 if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.25 && currentProjectile.from !== currentPlayerId) {
                     firebase.database().ref(`projectiles/${id}`).remove();
 
-                    currentPlayerRef.update({
-                        health: currentPlayer.health - 1,
-                    })
+                    // currentPlayerRef.update({
+                    //     health: currentPlayer.health - 1,
+                    // })
+
+                    currentPlayer.health = currentPlayer.health - 1;
+                    currentPlayerRef.set(players[currentPlayerId]);
 
                     if (currentPlayer.health <= 0){
                         scene.remove(playerElements[currentPlayerId]);
                     }
 
+
                     flag = true;
-                    break;
+                    break; // so that loop doesnt continue unneccessarily
+
                 }
             }
 
@@ -175,14 +181,17 @@ window.onload = function() {
                 }
 
                 nameTagAngles[key] = angle;
-                playerRef.set(players[playerId]);
+
             }
+
         }
+
         setTimeout(updateInfoTag, 10);
     }
 
-
     function initGame() {
+        updateInfoTag();
+
         // when user moves or rotates, works better than keydown idk why
         new KeyPressListener("KeyW", () => handleArrowPress());
         new KeyPressListener("KeyS", () => handleArrowPress());
@@ -354,7 +363,7 @@ window.onload = function() {
             });
             projectileModel.setAttribute("rotation",{
                 x: rig.getAttribute("rotation").x - 90,
-                y: rig.getAttribute("rotation").y,
+                y: rig.getAttribute("rotation").y + 45,
                 z: rig.getAttribute("rotation").z,
             });
 
@@ -376,8 +385,6 @@ window.onload = function() {
                 name: newName,
             });
         })
-
-        updateInfoTag();
     }
 
     firebase.auth().onAuthStateChanged((user) => {
