@@ -246,7 +246,7 @@ window.onload = function() {
             characterModel.setAttribute("height", 0.5);
             characterModel.setAttribute("width", 0.5);
             characterModel.setAttribute("depth", 0.5);
-            characterModel.setAttribute("color","white");
+            characterModel.setAttribute("color","#333536");
             characterModel.setAttribute("shader","flat");
             characterModel.setAttribute("rotation",{
                 x: addedPlayer.rotation.x,
@@ -272,27 +272,27 @@ window.onload = function() {
             if (addedPlayer.id !== playerId) {
                 let infoTagEntity = document.createElement("a-entity");
 
-                    let name = document.createElement("a-text");
-                    name.setAttribute("id", "name");
-                    name.setAttribute("value", addedPlayer.name);
-                    name.setAttribute("color", "black");
-                    name.setAttribute("position", {
-                        x: -0.3,
-                        y: 0.675,
-                        z: 0,
-                    });
-                    infoTagEntity.append(name);
+                let name = document.createElement("a-text");
+                name.setAttribute("id", "name");
+                name.setAttribute("value", addedPlayer.name);
+                name.setAttribute("color", "black");
+                name.setAttribute("position", {
+                    x: -0.3,
+                    y: 0.675,
+                    z: 0,
+                });
+                infoTagEntity.append(name);
 
-                    let health = document.createElement("a-text");
-                    health.setAttribute("id", "health");
-                    health.setAttribute("value", addedPlayer.health + "%");
-                    health.setAttribute("color", "black");
-                    health.setAttribute("position", {
-                        x: -0.3,
-                        y: 0.45,
-                        z: 0,
-                    });
-                    infoTagEntity.append(health);
+                let health = document.createElement("a-text");
+                health.setAttribute("id", "health");
+                health.setAttribute("value", addedPlayer.health + "%");
+                health.setAttribute("color", "black");
+                health.setAttribute("position", {
+                    x: -0.3,
+                    y: 0.45,
+                    z: 0,
+                });
+                infoTagEntity.append(health);
 
                 characterEntity.append(infoTagEntity);
             }
@@ -322,13 +322,33 @@ window.onload = function() {
         allProjectilesRef.on("child_added", (snapshot) => {
             const addedProjectile = snapshot.val();
 
-            const projectileModel = document.createElement("a-sphere");
+            const projectileModel = document.createElement("a-cylinder");
             projectileModel.setAttribute("radius", 0.05);
-            projectileModel.setAttribute("color", "red");
+            projectileModel.setAttribute("height", 0.05);
+            projectileModel.setAttribute("color", "#1C2F22");
+
+                const rice = document.createElement("a-cylinder");
+                rice.setAttribute("radius", 0.045);
+                rice.setAttribute("height", 0.055);
+                rice.setAttribute("color", "white");
+                projectileModel.append(rice)
+
+                const stuff = document.createElement("a-cylinder");
+                stuff.setAttribute("radius", 0.02);
+                stuff.setAttribute("height", 0.06);
+                stuff.setAttribute("color", "#DA8463");
+                projectileModel.append(stuff)
+
+
             projectileModel.setAttribute("position",{
                 x: addedProjectile.position.x,
                 y: addedProjectile.position.y,
                 z: addedProjectile.position.z,
+            });
+            projectileModel.setAttribute("rotation",{
+                x: 0,
+                y: 0,
+                z: 90,
             });
 
             projectileElements[addedProjectile.id] = projectileModel;
