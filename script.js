@@ -39,7 +39,6 @@ window.onload = function() {
     });
     let long = 0 - rig.getAttribute("position").x;
     let lat = 0 - rig.getAttribute("position").z;
-    console.log(atanInDegrees(long, lat));
 
     rig.setAttribute("rotation", {
         x: 0,
@@ -57,7 +56,7 @@ window.onload = function() {
             players[playerId].position.x = rig.getAttribute("position").x;
             players[playerId].position.y = rig.getAttribute("position").y;
             players[playerId].position.z = rig.getAttribute("position").z;
-            console.log("move");
+            // console.log("move");
             playerRef.set(players[playerId]);
         }
     }
@@ -67,7 +66,7 @@ window.onload = function() {
             players[playerId].rotation.x = rig.getAttribute("rotation").x;
             players[playerId].rotation.y = rig.getAttribute("rotation").y;
             players[playerId].rotation.z = rig.getAttribute("rotation").z;
-            console.log("move");
+            // console.log("rotate");
             playerRef.set(players[playerId]);
         }
     }
@@ -145,7 +144,7 @@ window.onload = function() {
                     if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.25 && currentProjectile.from !== currentPlayerId) {
                         firebase.database().ref(`projectiles/${id}`).remove();
 
-                        console.log("hit");
+                        // console.log("hit");
                         currentPlayerRef.update({
                             health: currentPlayer.health - 5,
                         })
