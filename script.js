@@ -112,7 +112,7 @@ window.onload = function() {
 
             // move, direct set
             let magnitude = 30; //smoothness, more is slower, laggier, also affects speed so balance
-            let timeout = 10; // speed, lower - faster
+            let timeout = 10; // speed, lower - faster, cant be too low - overload server if spammed
             currentProjectile.position.x -= dx / magnitude;
             currentProjectile.position.y += dy / magnitude;
             currentProjectile.position.z -= dz / magnitude;
@@ -212,15 +212,11 @@ window.onload = function() {
         new KeyPressListener("ArrowLeft", () => handleArrowPress());
         new KeyPressListener("ArrowRight", () => handleArrowPress());
         document.addEventListener("mousemove", handleMouseMove);
-
         new KeyHoldListener("Space", () => createBullet());
 
         // references to all players and coins
         const allPlayersRef = firebase.database().ref(`players`);
         const allProjectilesRef = firebase.database().ref(`projectiles`);
-
-
-        updateInfoTag(); // for initial load
 
         // when changes are made DOM
         // when new node is added
@@ -237,10 +233,8 @@ window.onload = function() {
 
                     if (characterState.health <= 0){
                         scene.remove();
-                        document.getElementById("currentHealth").remove();
-                        document.getElementById("player-name-container").remove();
-                        document.getElementById("instructions").remove();
-                        document.getElementById("end").style.display = "inline-block";
+                        document.getElementById("game-container").remove();
+                        document.getElementById("game-over-container").style.display = "inline-block";
                     }
                 }
 

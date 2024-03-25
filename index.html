@@ -9,36 +9,39 @@
         <script src="/KeyHoldListener.js"></script>
         <script src="/KeyPressListener.js"></script>
         <script src="/script.js"></script>
-
-
     </head>
     <body>
-        <div id="currentHealth" style="font-size: 28pt">
-            Health: 100%
+        <div id="game-container">
+            <div id="currentHealth" style="font-size: 28pt">
+                Health: 100%
+            </div>
+
+            <a-scene embedded>
+                <a-entity id="rig" camera wasd-controls="acceleration: 5; fly: false" look-controls>
+                    <a-cursor raycaster="objects: [interact]" color="red"></a-cursor>
+                </a-entity>
+
+                <a-plane rotation="-90 90 0" width="8" height="8" material="alphaTest: 0.5" color="#7BC8A4" src="grid.jpg" repeat = "5 5" shader="flat"></a-plane>
+                <a-sky color="#CDE9FB"></a-sky>
+            </a-scene>
+
+            <div>
+                Enter Name: <input id="player-name" maxlength="20" type="text" value = "" placeholder="Enter Name"/>
+            </div>
+
+            <div style="font-size: 12pt">
+                Move: Use WASD or Arrow keys
+            </div>
         </div>
-        <a-scene embedded>
-            <a-entity id="rig" camera wasd-controls="acceleration: 5; fly: false" look-controls>
-                <a-cursor raycaster="objects: [interact]" color="red"></a-cursor>
-            </a-entity>
 
-            <a-plane rotation="-90 90 0" width="8" height="8" material="alphaTest: 0.5" color="#7BC8A4" src="grid.jpg" repeat = "5 5" shader="flat"></a-plane>
-            <a-sky color="#CDE9FB"></a-sky>
-        </a-scene>
-
-        <div id="player-name-container">
-            Enter Name: <input id="player-name" maxlength="10" type="text" value = "" placeholder="Enter Name"/>
-        </div>
-
-        <div id="instructions" style="font-size: 12pt">
-            Move: Use WASD or Arrow keys
-        </div>
-
-        <div id="end">
+        <div id="game-over-container">
             <img src="water-monkey.gif">
             <br><br>
             You ded :(
             <br><br>
-            <a href="#" onclick="location.reload(); return false;" style="color: white">Reload to play again</a>
+            <a href="#" onclick="location.reload(); return false;" style="color: white">
+                Reload to play again
+            </a>
         </div>
 
         <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>

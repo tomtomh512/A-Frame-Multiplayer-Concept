@@ -25,7 +25,7 @@ a-scene {
     height: 70vh;
 }
 
-#end{
+#game-over-container{
     display: none;
 }
 
