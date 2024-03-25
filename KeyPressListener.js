@@ -1,16 +1,24 @@
 class KeyPressListener {
     constructor(keyCode, callback) {
-        let keyInterval;
-        this.keydownFunction = function(event) {
-            if (event.code === keyCode) {
-                keyInterval = setInterval(callback, 100); // Adjust the interval duration as needed
+        this.keyCode = keyCode;
+        this.callback = callback;
+        this.keyInterval = null;
+
+        this.keydownFunction = (event) => {
+            if (event.code === this.keyCode) {
+                if (!this.keyInterval) {
+                    this.keyInterval = setInterval(this.callback, 100);
+                }
             }
         };
-        this.keyupFunction = function(event) {
-            if (event.code === keyCode) {
-                clearInterval(keyInterval);
+
+        this.keyupFunction = (event) => {
+            if (event.code === this.keyCode) {
+                clearInterval(this.keyInterval);
+                this.keyInterval = null;
             }
         };
+
         document.addEventListener("keydown", this.keydownFunction);
         document.addEventListener("keyup", this.keyupFunction);
     }
@@ -18,5 +26,6 @@ class KeyPressListener {
     unbind() {
         document.removeEventListener("keydown", this.keydownFunction);
         document.removeEventListener("keyup", this.keyupFunction);
+        clearInterval(this.keyInterval);
     }
 }

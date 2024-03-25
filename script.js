@@ -41,10 +41,10 @@ window.onload = function() {
 
     function handleArrowPress() {
         if (players[playerId] !== undefined) {
-
             players[playerId].position.x = rig.getAttribute("position").x;
             players[playerId].position.y = rig.getAttribute("position").y;
             players[playerId].position.z = rig.getAttribute("position").z;
+            console.log("move");
             playerRef.set(players[playerId]);
         }
     }
@@ -53,6 +53,7 @@ window.onload = function() {
             players[playerId].rotation.x = rig.getAttribute("rotation").x;
             players[playerId].rotation.y = rig.getAttribute("rotation").y;
             players[playerId].rotation.z = rig.getAttribute("rotation").z;
+            console.log("rotate");
             playerRef.set(players[playerId]);
         }
     }
@@ -120,33 +121,33 @@ window.onload = function() {
 
             for (let playerKey in players) {
                 let currentPlayer = players[playerKey];
-                let currentPlayerId = currentPlayer.id;
-                let currentPlayerRef = firebase.database().ref(`players/${currentPlayerId}`);
-                let playerX = currentPlayer.position.x;
-                let playerY = currentPlayer.position.y;
-                let playerZ = currentPlayer.position.z;
+                if (currentPlayer !== undefined){
+                    let currentPlayerId = currentPlayer.id;
+                    let currentPlayerRef = firebase.database().ref(`players/${currentPlayerId}`);
+                    let playerX = currentPlayer.position.x;
+                    let playerY = currentPlayer.position.y;
+                    let playerZ = currentPlayer.position.z;
 
-                if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.25 && currentProjectile.from !== currentPlayerId) {
-                    firebase.database().ref(`projectiles/${id}`).remove();
+                    if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.25 && currentProjectile.from !== currentPlayerId) {
+                        firebase.database().ref(`projectiles/${id}`).remove();
 
-                    // currentPlayerRef.update({
-                    //     health: currentPlayer.health - 1,
-                    // })
+                        console.log("hit: " + currentPlayerId);
+                        currentPlayerRef.update({
+                            health: currentPlayer.health - 1,
+                        })
 
-                    currentPlayer.health = currentPlayer.health - 1;
-                    currentPlayerRef.set(players[currentPlayerId]);
+                        // currentPlayer.health = currentPlayer.health - 1;
+                        // currentPlayerRef.set(players[currentPlayerId]);
 
-                    if (currentPlayer.health <= 0){
-                        scene.remove(playerElements[currentPlayerId]);
+                        if (currentPlayer.health <= 0){
+                            scene.remove(playerElements[currentPlayerId]);
+                        }
+
+                        flag = true;
+                        break; // so that loop doesnt continue unneccessarily
                     }
-
-
-                    flag = true;
-                    break; // so that loop doesnt continue unneccessarily
-
                 }
             }
-
 
             if (flag == false){
                 setTimeout(
@@ -156,6 +157,7 @@ window.onload = function() {
             }
         }
     }
+
     function updateInfoTag() {
         for (let key in players){
             let currentPlayer = players[key];
@@ -181,9 +183,7 @@ window.onload = function() {
                 }
 
                 nameTagAngles[key] = angle;
-
             }
-
         }
 
         setTimeout(updateInfoTag, 10);
@@ -341,19 +341,19 @@ window.onload = function() {
             projectileModel.setAttribute("shader","flat");
             projectileModel.setAttribute("color", "#1C2F22");
 
-                const rice = document.createElement("a-cylinder");
-                rice.setAttribute("radius", 0.045);
-                rice.setAttribute("height", 0.055);
-                rice.setAttribute("shader","flat");
-                rice.setAttribute("color", "white");
-                projectileModel.append(rice)
+            const rice = document.createElement("a-cylinder");
+            rice.setAttribute("radius", 0.045);
+            rice.setAttribute("height", 0.055);
+            rice.setAttribute("shader","flat");
+            rice.setAttribute("color", "white");
+            projectileModel.append(rice)
 
-                const stuff = document.createElement("a-cylinder");
-                stuff.setAttribute("radius", 0.02);
-                stuff.setAttribute("height", 0.06);
-                stuff.setAttribute("shader","flat");
-                stuff.setAttribute("color", "#DA8463");
-                projectileModel.append(stuff)
+            const stuff = document.createElement("a-cylinder");
+            stuff.setAttribute("radius", 0.02);
+            stuff.setAttribute("height", 0.06);
+            stuff.setAttribute("shader","flat");
+            stuff.setAttribute("color", "#DA8463");
+            projectileModel.append(stuff)
 
 
             projectileModel.setAttribute("position",{
