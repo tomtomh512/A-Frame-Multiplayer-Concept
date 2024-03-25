@@ -57,6 +57,7 @@ window.onload = function() {
             players[playerId].position.x = rig.getAttribute("position").x;
             players[playerId].position.y = rig.getAttribute("position").y;
             players[playerId].position.z = rig.getAttribute("position").z;
+            console.log("move");
             playerRef.set(players[playerId]);
         }
     }
@@ -66,6 +67,7 @@ window.onload = function() {
             players[playerId].rotation.x = rig.getAttribute("rotation").x;
             players[playerId].rotation.y = rig.getAttribute("rotation").y;
             players[playerId].rotation.z = rig.getAttribute("rotation").z;
+            console.log("move");
             playerRef.set(players[playerId]);
         }
     }
@@ -110,7 +112,7 @@ window.onload = function() {
 
             // move, direct set
             let magnitude = 30; //smoothness, more is slower, laggier, also affects speed so balance
-            let timeout = 5; // speed, lower - faster
+            let timeout = 10; // speed, lower - faster
             currentProjectile.position.x -= dx / magnitude;
             currentProjectile.position.y += dy / magnitude;
             currentProjectile.position.z -= dz / magnitude;
@@ -143,6 +145,7 @@ window.onload = function() {
                     if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.25 && currentProjectile.from !== currentPlayerId) {
                         firebase.database().ref(`projectiles/${id}`).remove();
 
+                        console.log("hit");
                         currentPlayerRef.update({
                             health: currentPlayer.health - 5,
                         })
@@ -198,7 +201,6 @@ window.onload = function() {
     }
 
     function initGame() {
-        updateInfoTag(); // for initial load
 
         // when user moves or rotates, works better than keydown idk why
         new KeyPressListener("KeyW", () => handleArrowPress());
@@ -209,12 +211,16 @@ window.onload = function() {
         new KeyPressListener("ArrowDown", () => handleArrowPress());
         new KeyPressListener("ArrowLeft", () => handleArrowPress());
         new KeyPressListener("ArrowRight", () => handleArrowPress());
-        new KeyHoldListener("Space", () => createBullet());
         document.addEventListener("mousemove", handleMouseMove);
+
+        new KeyHoldListener("Space", () => createBullet());
 
         // references to all players and coins
         const allPlayersRef = firebase.database().ref(`players`);
         const allProjectilesRef = firebase.database().ref(`projectiles`);
+
+
+        updateInfoTag(); // for initial load
 
         // when changes are made DOM
         // when new node is added
