@@ -37,6 +37,18 @@ window.onload = function() {
         y: 0.5,
         z: Math.random() * (3.25 - (-3.25)) + (-3.25)
     });
+    let long = 0 - rig.getAttribute("position").x;
+    let lat = 0 - rig.getAttribute("position").z;
+    console.log(atanInDegrees(long, lat));
+
+    rig.setAttribute("rotation", {
+        x: 0,
+        y: Math.floor(Math.random() * 360),
+        z: 0
+    });
+
+    rig.components["look-controls"].yawObject.rotation.y = rig.getAttribute("rotation").y * Math.PI / 180;
+
     const playerNameInput = document.querySelector("#player-name");
 
     function handleArrowPress() {
