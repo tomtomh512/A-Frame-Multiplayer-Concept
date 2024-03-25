@@ -24,3 +24,12 @@ a-scene {
     /*width: 75vw;*/
     height: 70vh;
 }
+
+#end{
+    display: none;
+}
+
+img {
+    width: 75vw;
+    height: 70vh;
+}

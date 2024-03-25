@@ -7,7 +7,7 @@ class KeyPressListener {
         this.keydownFunction = (event) => {
             if (event.code === this.keyCode) {
                 if (!this.keyInterval) {
-                    this.keyInterval = setInterval(this.callback, 100);
+                    this.keyInterval = setInterval(this.callback, 5);
                 }
             }
         };

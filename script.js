@@ -41,19 +41,19 @@ window.onload = function() {
 
     function handleArrowPress() {
         if (players[playerId] !== undefined) {
+            updateInfoTag();
             players[playerId].position.x = rig.getAttribute("position").x;
             players[playerId].position.y = rig.getAttribute("position").y;
             players[playerId].position.z = rig.getAttribute("position").z;
-            console.log("move");
             playerRef.set(players[playerId]);
         }
     }
     function handleMouseMove() {
         if (players[playerId] !== undefined) {
+            updateInfoTag();
             players[playerId].rotation.x = rig.getAttribute("rotation").x;
             players[playerId].rotation.y = rig.getAttribute("rotation").y;
             players[playerId].rotation.z = rig.getAttribute("rotation").z;
-            console.log("rotate");
             playerRef.set(players[playerId]);
         }
     }
@@ -131,16 +131,14 @@ window.onload = function() {
                     if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.25 && currentProjectile.from !== currentPlayerId) {
                         firebase.database().ref(`projectiles/${id}`).remove();
 
-                        console.log("hit: " + currentPlayerId);
                         currentPlayerRef.update({
-                            health: currentPlayer.health - 1,
+                            health: currentPlayer.health - 5,
                         })
 
-                        // currentPlayer.health = currentPlayer.health - 1;
-                        // currentPlayerRef.set(players[currentPlayerId]);
-
-                        if (currentPlayer.health <= 0){
-                            scene.remove(playerElements[currentPlayerId]);
+                        // should be 0 but idk
+                        if (currentPlayer.health <= 5){
+                            playerElements[currentPlayerId].remove();
+                            currentPlayerRef.remove();
                         }
 
                         flag = true;
@@ -185,12 +183,10 @@ window.onload = function() {
                 nameTagAngles[key] = angle;
             }
         }
-
-        setTimeout(updateInfoTag, 10);
     }
 
     function initGame() {
-        updateInfoTag();
+        updateInfoTag(); // for initial load
 
         // when user moves or rotates, works better than keydown idk why
         new KeyPressListener("KeyW", () => handleArrowPress());
@@ -219,7 +215,15 @@ window.onload = function() {
                 let element = playerElements[key];
 
                 if (key === playerId){
-                    document.getElementById("currentHealth").innerHTML = (characterState.health).toString();
+                    document.getElementById("currentHealth").innerHTML = "Health: " + (characterState.health).toString() + "%";
+
+                    if (characterState.health <= 0){
+                        scene.remove();
+                        document.getElementById("currentHealth").remove();
+                        document.getElementById("player-name-container").remove();
+                        document.getElementById("instructions").remove();
+                        document.getElementById("end").style.display = "inline-block";
+                    }
                 }
 
                 if (key !== playerId){
@@ -389,7 +393,6 @@ window.onload = function() {
 
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-
             playerId = user.uid;
             playerRef = firebase.database().ref(`players/${playerId}`);
             let health = 100;
