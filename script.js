@@ -1,3 +1,6 @@
+let message1 = "You went out of bounds dumbass";
+let message2 = "Took too many sushi rolls to the face";
+
 window.onload = function() {
     let playerId; // string of who we are logged in as
     let playerRef; // firebase ref
@@ -14,9 +17,6 @@ window.onload = function() {
         y: 0.5,
         z: Math.random() * (3.25 - (-3.25)) + (-3.25)
     });
-    let long = 0 - rig.getAttribute("position").x;
-    let lat = 0 - rig.getAttribute("position").z;
-
     rig.setAttribute("rotation", {
         x: 0,
         y: Math.floor(Math.random() * 360),
@@ -35,6 +35,36 @@ window.onload = function() {
             players[playerId].position.z = rig.getAttribute("position").z;
             // console.log("move");
             playerRef.set(players[playerId]);
+
+            let playerX = players[playerId].position.x;
+            let playerZ = players[playerId].position.z;
+
+            let softLimit = 4;
+            let hardLimit = 6;
+
+            let alert = document.createElement("a-text");
+            alert.setAttribute("value", "Go back to the zone");
+            alert.setAttribute("position", {
+                x: -1,
+                y: 0,
+                z: 0
+            });
+
+            if (playerX < -softLimit || playerX > softLimit || playerZ < -softLimit || playerZ > softLimit){
+
+                rig.querySelector("a-cursor").append(alert);
+            } else {
+                rig.querySelector("a-cursor").innerHTML = '';
+            }
+
+            if (playerX < -hardLimit || playerX > hardLimit || playerZ < -hardLimit || playerZ > hardLimit){
+                playerElements[playerId].remove();
+                playerRef.remove();
+                scene.remove();
+                document.getElementById("game-container").remove();
+                document.getElementById("game-over-container").style.display = "inline-block";
+                document.getElementById("message").innerHTML = message1;
+            }
         }
     }
     function handleMouseMove() {
@@ -43,7 +73,6 @@ window.onload = function() {
             players[playerId].rotation.x = rig.getAttribute("rotation").x;
             players[playerId].rotation.y = rig.getAttribute("rotation").y;
             players[playerId].rotation.z = rig.getAttribute("rotation").z;
-            // console.log("rotate");
             playerRef.set(players[playerId]);
         }
     }
@@ -74,6 +103,8 @@ window.onload = function() {
         moveBullet(uniqueId);
     }
 
+    let range = 6;
+    let collisionRange = 0.25;
     function moveBullet(projectileKey) {
         let currentProjectile = projectiles[projectileKey];
         if (currentProjectile !== undefined) {
@@ -95,7 +126,6 @@ window.onload = function() {
             projectileRef.set(projectiles[id]);
 
             // out of bounds and collisions
-            let range = 4;
             if (
                 Math.abs(currentProjectile.position.x) >= range ||
                 Math.abs(currentProjectile.position.y) >= range ||
@@ -118,7 +148,7 @@ window.onload = function() {
                     let playerY = currentPlayer.position.y;
                     let playerZ = currentPlayer.position.z;
 
-                    if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < 0.25 && currentProjectile.from !== currentPlayerId) {
+                    if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < collisionRange && currentProjectile.from !== currentPlayerId) {
                         firebase.database().ref(`projectiles/${id}`).remove();
 
                         // console.log("hit");
@@ -219,6 +249,7 @@ window.onload = function() {
                         scene.remove();
                         document.getElementById("game-container").remove();
                         document.getElementById("game-over-container").style.display = "inline-block";
+                        document.getElementById("message").innerHTML = message2;
                     }
                 }
 
