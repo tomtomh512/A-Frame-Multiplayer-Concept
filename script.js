@@ -363,7 +363,7 @@ window.onload = function() {
                 let health = document.createElement("a-text");
                 health.setAttribute("id", "health");
                 health.setAttribute("value", addedPlayer.health + "%");
-                health.setAttribute("color", "black");
+                health.setAttribute("color", "white");
                 health.setAttribute("position", {
                     x: -0.3,
                     y: 0.45,
