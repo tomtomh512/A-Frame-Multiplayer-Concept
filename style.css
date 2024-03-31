@@ -39,10 +39,6 @@ img {
     height: 70vh;
 }
 
-#currentHealth {
-    font-size: 28pt;
-}
-
 #health-container {
     width: 60%;
     height: 40px;
@@ -59,6 +55,16 @@ img {
     width: 100%;
     height: 40px;
     margin: 0;
+    position: relative;
+    top: -40px;
+}
+
+#healthbar-red {
+    background-color: #A80000;
+    width: 100%;
+    height: 40px;
+    margin: 0;
+    transition: 1s;
 }
 
 #instructions {

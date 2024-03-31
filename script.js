@@ -35,7 +35,6 @@ window.onload = function() {
             players[playerId].position.x = rig.getAttribute("position").x;
             players[playerId].position.y = rig.getAttribute("position").y;
             players[playerId].position.z = rig.getAttribute("position").z;
-            // console.log("move");
             playerRef.set(players[playerId]);
 
             let playerX = players[playerId].position.x;
@@ -269,6 +268,7 @@ window.onload = function() {
 
                 if (key === playerId){
                     document.getElementById("healthbar").style.width = `${characterState.health}%`;
+                    document.getElementById("healthbar-red").style.width = `${characterState.health}%`;
 
                     if (characterState.health > 50){
                         document.getElementById("healthbar").style.backgroundColor = "#16A800FF";
