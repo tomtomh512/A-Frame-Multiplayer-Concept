@@ -352,7 +352,7 @@ window.onload = function() {
                 let name = document.createElement("a-text");
                 name.setAttribute("id", "name");
                 name.setAttribute("value", addedPlayer.name);
-                name.setAttribute("color", "black");
+                name.setAttribute("color", "white");
                 name.setAttribute("position", {
                     x: -0.3,
                     y: 0.675,
