@@ -1,5 +1,7 @@
-let message1 = "You went out of bounds dumbass";
+let message1 = "You went out of bounds :/";
 let message2 = "Took too many sushi rolls to the face";
+let outsideOfZone = false;
+let insideOfZone = true;
 
 window.onload = function() {
     let playerId; // string of who we are logged in as
@@ -52,8 +54,16 @@ window.onload = function() {
 
             if (playerX < -softLimit || playerX > softLimit || playerZ < -softLimit || playerZ > softLimit){
 
+                insideOfZone = false;
+
+                if (!outsideOfZone){ decreaseHealth(); }
+
+                outsideOfZone = true;
                 rig.querySelector("a-cursor").append(alert);
             } else {
+
+                insideOfZone = true;
+                outsideOfZone = false;
                 rig.querySelector("a-cursor").innerHTML = '';
             }
 
@@ -67,6 +77,7 @@ window.onload = function() {
             }
         }
     }
+
     function handleMouseMove() {
         if (players[playerId] !== undefined) {
             updateInfoTag();
@@ -74,6 +85,28 @@ window.onload = function() {
             players[playerId].rotation.y = rig.getAttribute("rotation").y;
             players[playerId].rotation.z = rig.getAttribute("rotation").z;
             playerRef.set(players[playerId]);
+        }
+    }
+
+    function decreaseHealth() {
+        if (players[playerId] !== undefined){
+
+            playerRef.update({
+                health: players[playerId].health - 5,
+            });
+
+            if (players[playerId].health <= 5){
+                playerElements[playerId].remove();
+                playerRef.remove();
+                scene.remove();
+                document.getElementById("game-container").remove();
+                document.getElementById("game-over-container").style.display = "inline-block";
+                document.getElementById("message").innerHTML = message1;
+            }
+
+            if (insideOfZone == false){
+                setTimeout(decreaseHealth, 500);
+            }
         }
     }
 
