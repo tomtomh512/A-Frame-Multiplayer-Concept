@@ -1,26 +1,3 @@
-function calculateDistance(x1, y1, z1, x2, y2, z2) {
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const dz = z2 - z1;
-    return Math.sqrt(dx * dx + dy * dy + dz * dz);
-}
-function sinInDegrees(angleInDegrees) {
-    return Math.sin(angleInDegrees * Math.PI / 180);
-}
-function cosInDegrees(angleInDegrees) {
-    const angleInRadians = angleInDegrees * Math.PI / 180;
-    return Math.cos(angleInRadians);
-}
-function atanInDegrees(y, x) {
-    // Convert from degrees to radians
-    const angleInRadians = Math.atan(y / x);
-
-    // Convert from radians to degrees
-    const angleInDegrees = angleInRadians * 180 / Math.PI;
-
-    return angleInDegrees;
-}
-
 window.onload = function() {
     let playerId; // string of who we are logged in as
     let playerRef; // firebase ref
@@ -228,7 +205,15 @@ window.onload = function() {
                 let element = playerElements[key];
 
                 if (key === playerId){
-                    document.getElementById("currentHealth").innerHTML = "Health: " + (characterState.health).toString() + "%";
+                    document.getElementById("healthbar").style.width = `${characterState.health}%`;
+
+                    if (characterState.health > 50){
+                        document.getElementById("healthbar").style.backgroundColor = "#16A800FF";
+                    } else if (characterState.health > 25){
+                        document.getElementById("healthbar").style.backgroundColor = "#A8A500FF";
+                    } else {
+                        document.getElementById("healthbar").style.backgroundColor = "#A80000FF";
+                    }
 
                     if (characterState.health <= 0){
                         scene.remove();
