@@ -20,7 +20,7 @@
 
     <a-scene embedded>
         <a-entity id="rig" camera wasd-controls="acceleration: 5; fly: false" look-controls>
-            <a-cursor raycaster="objects: [interact]" color="red"></a-cursor>
+            <a-cursor raycaster="objects: [interact]" color="white"></a-cursor>
         </a-entity>
 
         <a-plane rotation="-90 90 0" width="8" height="8" material="alphaTest: 0.5" color="#7BC8A4" src="grid.jpg" repeat = "5 5" shader="flat"></a-plane>
@@ -44,10 +44,10 @@
         <div id="healthbar"></div>
     </div>
 
-
-<!--    <div style="font-size: 12pt">-->
-<!--        Move: Use WASD or Arrow keys-->
-<!--    </div>-->
+    <div id="instructions">
+        Use SPACE to throw a sushi <br>
+        Use WASD or Arrow Keys to move
+    </div>
 </div>
 
 <div id="game-over-container">
