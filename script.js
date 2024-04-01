@@ -104,7 +104,7 @@ window.onload = function() {
             }
 
             if (insideOfZone == false){
-                setTimeout(decreaseHealth, 500);
+                setTimeout(decreaseHealth, 1000);
             }
         }
     }
