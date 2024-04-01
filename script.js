@@ -111,28 +111,35 @@ window.onload = function() {
 
     let count = 0; // ain't no way this going over 9007199254740991
     function createBullet() {
-        let position = {
-            x: rig.getAttribute("position").x,
-            y: rig.getAttribute("position").y,
-            z: rig.getAttribute("position").z,
-        }
-        let rotation = {
-            x: rig.getAttribute("rotation").x,
-            y: rig.getAttribute("rotation").y,
-            z: rig.getAttribute("rotation").z,
-        }
-        let uniqueId = playerId + count.toString();
-        const projectileRef = firebase.database().ref(`projectiles/${uniqueId}`);
+        if (players[playerId].ammo > 0){
+            let position = {
+                x: rig.getAttribute("position").x,
+                y: rig.getAttribute("position").y,
+                z: rig.getAttribute("position").z,
+            }
+            let rotation = {
+                x: rig.getAttribute("rotation").x,
+                y: rig.getAttribute("rotation").y,
+                z: rig.getAttribute("rotation").z,
+            }
+            let uniqueId = playerId + count.toString();
+            const projectileRef = firebase.database().ref(`projectiles/${uniqueId}`);
 
-        projectileRef.set({
-            id: uniqueId,
-            from: playerId,
-            position,
-            rotation,
-        })
+            projectileRef.set({
+                id: uniqueId,
+                from: playerId,
+                position,
+                rotation,
+            })
 
-        count ++;
-        moveBullet(uniqueId);
+            count ++;
+
+            playerRef.update({
+                ammo: players[playerId].ammo - 1,
+            })
+
+            moveBullet(uniqueId);
+        }
     }
 
     let range = 6;
@@ -238,7 +245,20 @@ window.onload = function() {
         }
     }
 
+    function refill() {
+        console.log("1");
+        if (players[playerId] !== undefined) {
+            if (players[playerId].ammo < 10){
+                playerRef.update({
+                    ammo: players[playerId].ammo + 1,
+                })
+            }
+        }
+        setTimeout(refill, 1500);
+    }
+
     function initGame() {
+        refill();
 
         // when user moves or rotates, works better than keydown idk why
         new KeyPressListener("KeyW", () => handleArrowPress());
@@ -267,6 +287,7 @@ window.onload = function() {
                 let element = playerElements[key];
 
                 if (key === playerId){
+                    document.getElementById("health-value").innerHTML = `Health: ${characterState.health}`;
                     document.getElementById("healthbar").style.width = `${characterState.health}%`;
                     document.getElementById("healthbar-red").style.width = `${characterState.health}%`;
 
@@ -284,6 +305,8 @@ window.onload = function() {
                         document.getElementById("game-over-container").style.display = "inline-block";
                         document.getElementById("message").innerHTML = message2;
                     }
+
+                    document.getElementById("ammo-value").innerHTML = `Ammo: ${characterState.ammo}`;
                 }
 
                 if (key !== playerId){
@@ -471,6 +494,7 @@ window.onload = function() {
                 id: playerId,
                 name: playerNameInput.value,
                 health,
+                ammo: 10,
                 position,
                 rotation,
             })
@@ -483,7 +507,6 @@ window.onload = function() {
             // logged out
         }
     })
-
     firebase.auth().signInAnonymously().catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;

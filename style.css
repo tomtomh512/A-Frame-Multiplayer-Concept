@@ -67,9 +67,19 @@ img {
     transition: 1s;
 }
 
+#information {
+    display: flex;
+}
+
+#information > div {
+    flex: 1;
+    position: relative;
+    top: -180px;
+}
+
 #instructions {
     font-size: 12pt;
     position: relative;
-    top: -40px;
+    top: -100px;
     line-height: 1.6;
 }
