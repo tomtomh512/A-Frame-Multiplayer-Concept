@@ -246,7 +246,6 @@ window.onload = function() {
     }
 
     function refill() {
-        console.log("1");
         if (players[playerId] !== undefined) {
             if (players[playerId].ammo < 10){
                 playerRef.update({
@@ -258,7 +257,7 @@ window.onload = function() {
     }
 
     function initGame() {
-        refill();
+        refill(); // refill ammo
 
         // when user moves or rotates, works better than keydown idk why
         new KeyPressListener("KeyW", () => handleArrowPress());
