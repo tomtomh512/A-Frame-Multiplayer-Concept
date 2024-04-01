@@ -157,8 +157,8 @@ window.onload = function() {
             let dz = cosInDegrees(currentProjectile.rotation.y);
 
             // move, direct set
-            let magnitude = 30; //smoothness, more is slower, laggier, also affects speed so balance
-            let timeout = 10; // speed, lower - faster, cant be too low - overload server if spammed
+            let magnitude = 10; //smoothness, more is slower, laggier, also affects speed so balance
+            let timeout = 25; // speed, lower - faster, cant be too low - overload server if spammed
             currentProjectile.position.x -= dx / magnitude;
             currentProjectile.position.y += dy / magnitude;
             currentProjectile.position.z -= dz / magnitude;
