@@ -1,5 +1,5 @@
-let message1 = "You went out of bounds :/";
-let message2 = "Took too many sushi rolls to the face";
+let message1 = "You ded :( You went out of bounds";
+let message2 = "You ded :( You took too many sushi rolls to the face";
 let outsideOfZone = false;
 let insideOfZone = true;
 
@@ -187,7 +187,17 @@ window.onload = function() {
                     let playerY = currentPlayer.position.y;
                     let playerZ = currentPlayer.position.z;
 
-                    if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < collisionRange && currentProjectile.from !== currentPlayerId) {
+                    let d = 0.3;
+
+                    if (projectileX > (playerX - d) && projectileX < (playerX + d) &&
+                        projectileY > (playerY - d) && projectileY < (playerY + d) &&
+                        projectileZ > (playerZ - d) && projectileZ < (playerZ + d) &&
+                        currentProjectile.from !== currentPlayerId
+                    ) {
+
+
+
+                    //if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < collisionRange && currentProjectile.from !== currentPlayerId) {
                         firebase.database().ref(`projectiles/${id}`).remove();
 
                         // console.log("hit");
@@ -253,7 +263,7 @@ window.onload = function() {
                 })
             }
         }
-        setTimeout(refill, 1500);
+        setTimeout(refill, 1000);
     }
 
     function initGame() {
@@ -510,6 +520,6 @@ window.onload = function() {
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log(errorCode, errorMessage);
-    });
+    })
 
 }
