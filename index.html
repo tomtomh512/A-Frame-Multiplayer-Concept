@@ -14,19 +14,15 @@
 <body>
 <div id="game-container">
 
-    <div>
-        Enter Name: <input id="player-name" maxlength="20" type="text" value = "" placeholder="Enter Name"/>
-    </div>
-
-    <a-scene embedded>
+    <a-scene embedded xr-mode-ui="enabled: false">
         <a-entity id="rig" camera wasd-controls="acceleration: 4; fly: false" look-controls position="0 0.5 0">
             <a-cursor raycaster="objects: [interact]" color="white"></a-cursor>
         </a-entity>
 
-        <!--
-        <a-plane rotation="-90 0 0" width="8" height="8" material="alphaTest: 0.5" color="#7BC8A4" src="grid.jpg" repeat = "5 5"></a-plane>
+
+        <a-plane rotation="-90 0 0" width="8" height="8" shader = "flat" material="alphaTest: 0.5" color="#7BC8A4" src="grid.jpg" repeat = "5 5"></a-plane>
         <a-sky color="#CDE9FB"></a-sky>
-        -->
+
 
         <!-- borders -->
         <a-plane static-body rotation="0 180 0" color="red" width="8" height="6" opacity="0.5" position="0 0 -4"></a-plane>
@@ -34,54 +30,11 @@
         <a-plane static-body rotation="0 0 0" color="red" width="8" height="6" opacity="0.5" position="0 0 4"></a-plane>
         <a-plane static-body rotation="0 90 0" color="red" width="8" height="6" opacity="0.5" position="4 0 0"></a-plane>
 
-        <!-- sides -->
-        <a-entity position="-6 -2.5 0">
-            <a-box depth="12" width="0.5" height=" 0.1" color="#363636"></a-box>
-            <a-plane width="12" height=" 2" color="#AF9E81" position="0.2 1 0" rotation="0 90 0"></a-plane>
-            <a-box depth="12" width="0.3" height=" 6" color="#D0CAC0" position="0 3 0"></a-box>
-            <a-box depth="12" width="0.5" height=" 0.1" color="#363636" position="0 2 0"></a-box>
-            <a-box depth="0.5" width="0.1" height=" 6" color="#363636" position="-3 2 0"></a-box>
-            <a-box depth="0.1" width="0.5" height=" 6" color="#363636" position="0 2 6"></a-box>
-            <a-box depth="0.1" width="0.5" height=" 6" color="#363636" position="0 2 -6"></a-box>
-        </a-entity>
-        <a-entity position="6 -2.5 0">
-            <a-box depth="12" width="0.5" height=" 0.1" color="#363636"></a-box>
-            <a-plane width="12" height=" 2" color="#AF9E81" position="-0.2 1 0" rotation="0 270 0"></a-plane>
-            <a-box depth="12" width="0.3" height=" 6" color="#D0CAC0" position="0 3 0"></a-box>
-            <a-box depth="12" width="0.5" height=" 0.1" color="#363636" position="0 2 0"></a-box>
-            <a-box depth="0.1" width="0.5" height=" 6" color="#363636" position="0 2 6"></a-box>
-            <a-box depth="0.1" width="0.5" height=" 6" color="#363636" position="0 2 -6"></a-box>
-        </a-entity>
-        <!-- back -->
-        <a-plane static-body rotation="0 0 0" color="#804141" width="12" height="6" position="0 0 -6"></a-plane>
-        <a-entity position="0 -2.5 -6">
-            <a-box depth="0.1" width="12" height=" 0.1" color="#363636"></a-box>
-            <a-plane width="12" height=" 2" color="#AF9E81" position="0 1 0.01"></a-plane>
-            <a-box depth="0.1" width="12" height=" 0.1" color="#363636" position="0 2 0"></a-box>
-            <a-box depth="0.1" width="0.1" height="6" color="#363636" position="2 2.5 0"></a-box>
-            <a-box depth="0.1" width="0.1" height="6" color="#363636" position="-2 2.5 0"></a-box>
-            <a-plane width="4" height=" 4" color="#D0CAC0" position="0 4 0.01"></a-plane>
-        </a-entity>
-        <!-- front -->
-        <a-plane static-body rotation="0 180 0" color="#ADCED3" width="12" height="6" position="0 0 6"></a-plane>
-        <a-entity position="0 0 6">
-            <a-plane width="12" height="1.5" color="#B4A383" position="0 1.75 -0.025" rotation="0 180 0"></a-plane>
-            <a-box depth="0.1" width="12" height="0.1" color="#363636" position="0 1 0"></a-box>
-            <a-box depth="0.1" width="12" height="0.1" color="#363636" position="0 -2.5 0"></a-box>
-            <a-box depth="0.1" width="0.1" height="6" color="#363636" position="2 0 0"></a-box>
-            <a-box depth="0.1" width="0.1" height="6" color="#363636" position="-2 0 0"></a-box>
-        </a-entity>
-
-        <!-- floor -->
-        <a-plane rotation="-90 0 0" width="12" height="12" color="#A09685" position="0 -2.5 0"></a-plane>
-
-        <!-- roof -->
-        <a-plane rotation="-270 0 0" width="12" height="12" color="#4a4a4a" position="0 2.5 0"></a-plane>
-        <a-box depth="12" color="#4a4a4a" position="-5.25 2.5 0"></a-box>
-        <a-box depth="12" color="#4a4a4a" position="5.25 2.5 0"></a-box>
-
     </a-scene>
 
+    <div id="enter-name">
+        <input id="player-name" maxlength="20" type="text" value = "" placeholder="Enter Name"/>
+    </div>
 
     <div id="health-container">
         <div id="healthbar-red"></div>
@@ -93,10 +46,6 @@
         <div id="ammo-value"> Ammo: 10 </div>
     </div>
 
-    <div id="instructions">
-        Use SPACE to throw a sushi <br>
-        Use WASD or Arrow Keys to move
-    </div>
 </div>
 
 <div id="game-over-container">
