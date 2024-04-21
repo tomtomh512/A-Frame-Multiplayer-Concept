@@ -276,9 +276,9 @@ window.onload = function() {
 
                     let d = 0.3;
 
-                    if (projectileX > (playerX - d) && projectileX < (playerX + d) &&
-                        projectileY > (playerY - d) && projectileY < (playerY + d) &&
-                        projectileZ > (playerZ - d) && projectileZ < (playerZ + d) &&
+                    if (projectileX > (playerX - 0.275) && projectileX < (playerX + 0.275) &&
+                        projectileY > (playerY + 0.275 - 0.8) && projectileY < (playerY + 0.275) &&
+                        projectileZ > (playerZ - 0.275) && projectileZ < (playerZ + 0.275) &&
                         currentProjectile.from !== currentPlayerId
                     ) {
 
