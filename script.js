@@ -2,6 +2,20 @@ let message1 = "You ded :( You went out of bounds";
 let message2 = "You ded :( You took too many sushi rolls to the face";
 let outsideOfZone = false;
 let insideOfZone = true;
+let hasMoved = false;
+
+function getSpawnXPoint() {
+    const ranges = [
+        { min: -3.25, max: -3 },
+        { min: -0.5, max: 0.5 },
+        { min: 3, max: 3.25 }
+    ];
+
+    const randomRangeIndex = Math.floor(Math.random() * ranges.length);
+    const range = ranges[randomRangeIndex];
+
+    return Math.random() * (range.max - range.min) + range.min;
+}
 
 window.onload = function() {
     let playerId; // string of who we are logged in as
@@ -13,10 +27,10 @@ window.onload = function() {
     let nameTagAngles = {};
 
     let scene = document.querySelector("a-scene");
-    let rig = document.getElementById("rig");
+    let rig = document.getElementById("camera");
     rig.setAttribute("position", {
-        x: Math.random() * (3.25 - (-3.25)) + (-3.25),
-        y: 0.5,
+        x: getSpawnXPoint(),
+        y: 10,
         z: Math.random() * (3.25 - (-3.25)) + (-3.25)
     });
     rig.setAttribute("rotation", {
@@ -31,49 +45,54 @@ window.onload = function() {
 
     function handleArrowPress() {
         if (players[playerId] !== undefined) {
+
+            hasMoved = true;
             updateInfoTag();
+
             players[playerId].position.x = rig.getAttribute("position").x;
             players[playerId].position.y = rig.getAttribute("position").y;
             players[playerId].position.z = rig.getAttribute("position").z;
             playerRef.set(players[playerId]);
 
-            let playerX = players[playerId].position.x;
-            let playerZ = players[playerId].position.z;
-
-            let softLimit = 4;
-            let hardLimit = 6;
-
-            let alert = document.createElement("a-text");
-            alert.setAttribute("value", "Go back to the zone");
-            alert.setAttribute("position", {
-                x: -1,
-                y: 0,
-                z: 0
-            });
-
-            if (playerX < -softLimit || playerX > softLimit || playerZ < -softLimit || playerZ > softLimit){
-
-                insideOfZone = false;
-
-                if (!outsideOfZone){ decreaseHealth(); }
-
-                outsideOfZone = true;
-                rig.querySelector("a-cursor").append(alert);
-            } else {
-
-                insideOfZone = true;
-                outsideOfZone = false;
-                rig.querySelector("a-cursor").innerHTML = '';
-            }
-
-            if (playerX < -hardLimit || playerX > hardLimit || playerZ < -hardLimit || playerZ > hardLimit){
-                playerElements[playerId].remove();
-                playerRef.remove();
-                scene.remove();
-                document.getElementById("game-container").remove();
-                document.getElementById("game-over-container").style.display = "inline-block";
-                document.getElementById("message").innerHTML = message1;
-            }
+            // let playerX = players[playerId].position.x;
+            // let playerZ = players[playerId].position.z;
+            // let softLimit = 4;
+            // let hardLimit = 6;
+            //
+            // let alert = document.createElement("a-text");
+            // alert.setAttribute("value", "Go back to the zone");
+            // alert.setAttribute("scale", {
+            //     x: 0.125,
+            //     y: 0.125,
+            //     z: 0.125
+            // });
+            // alert.setAttribute("position", {
+            //     x: -0.125,
+            //     y: 0,
+            //     z: 0.75
+            // });
+            //
+            // if (playerX < -softLimit || playerX > softLimit || playerZ < -softLimit || playerZ > softLimit){
+            //
+            //     insideOfZone = false;
+            //     if (!outsideOfZone){ decreaseHealth(); }
+            //     outsideOfZone = true;
+            //     rig.querySelector("a-cursor").append(alert);
+            // } else {
+            //
+            //     insideOfZone = true;
+            //     outsideOfZone = false;
+            //     rig.querySelector("a-cursor").innerHTML = '';
+            // }
+            //
+            // if (playerX < -hardLimit || playerX > hardLimit || playerZ < -hardLimit || playerZ > hardLimit){
+            //     playerElements[playerId].remove();
+            //     playerRef.remove();
+            //     scene.remove();
+            //     document.getElementById("game-container").remove();
+            //     document.getElementById("game-over-container").style.display = "inline-block";
+            //     document.getElementById("message").innerHTML = message1;
+            // }
         }
     }
 
@@ -111,38 +130,57 @@ window.onload = function() {
 
     let count = 0; // ain't no way this going over 9007199254740991
     function createBullet() {
-        if (players[playerId].ammo > 0){
-            let position = {
-                x: rig.getAttribute("position").x,
-                y: rig.getAttribute("position").y,
-                z: rig.getAttribute("position").z,
+
+        let alert = document.createElement("a-text");
+        alert.setAttribute("value", "No ammo");
+        alert.setAttribute("color", "black");
+        alert.setAttribute("scale", {
+            x: 0.065,
+            y: 0.065,
+            z: 0.065
+        });
+        alert.setAttribute("position", {
+            x: 0.01,
+            y: 0,
+            z: 0.75
+        });
+
+        if (hasMoved) {
+
+            if (players[playerId].ammo > 0) {
+                let position = {
+                    x: rig.getAttribute("position").x,
+                    y: rig.getAttribute("position").y,
+                    z: rig.getAttribute("position").z,
+                }
+                let rotation = {
+                    x: rig.getAttribute("rotation").x,
+                    y: rig.getAttribute("rotation").y,
+                    z: rig.getAttribute("rotation").z,
+                }
+                let uniqueId = playerId + count.toString();
+                const projectileRef = firebase.database().ref(`projectiles/${uniqueId}`);
+
+                projectileRef.set({
+                    id: uniqueId,
+                    from: playerId,
+                    position,
+                    rotation,
+                })
+
+                count++;
+
+                playerRef.update({
+                    ammo: players[playerId].ammo - 1,
+                })
+
+                moveBullet(uniqueId);
+            } else {
+                rig.querySelector("a-cursor").append(alert);
             }
-            let rotation = {
-                x: rig.getAttribute("rotation").x,
-                y: rig.getAttribute("rotation").y,
-                z: rig.getAttribute("rotation").z,
-            }
-            let uniqueId = playerId + count.toString();
-            const projectileRef = firebase.database().ref(`projectiles/${uniqueId}`);
-
-            projectileRef.set({
-                id: uniqueId,
-                from: playerId,
-                position,
-                rotation,
-            })
-
-            count ++;
-
-            playerRef.update({
-                ammo: players[playerId].ammo - 1,
-            })
-
-            moveBullet(uniqueId);
         }
     }
 
-    let range = 6;
     let collisionRange = 0.25;
     function moveBullet(projectileKey) {
         let currentProjectile = projectiles[projectileKey];
@@ -164,16 +202,65 @@ window.onload = function() {
             currentProjectile.position.z -= dz / magnitude;
             projectileRef.set(projectiles[id]);
 
-            // out of bounds and collisions
+            // out of bounds
             if (
-                Math.abs(currentProjectile.position.x) >= range ||
-                Math.abs(currentProjectile.position.y) >= range ||
-                Math.abs(currentProjectile.position.z) >= range
+                Math.abs(currentProjectile.position.x) >= 5.5 ||
+                Math.abs(currentProjectile.position.z) >= 5.5 ||
+                currentProjectile.position.y <= -0.65 ||
+                currentProjectile.position.y >= 1.75
             ) {
                 firebase.database().ref(`projectiles/${id}`).remove();
-                // console.log("out of bounds");
             }
 
+            // pillars
+            if (
+                currentProjectile.position.x >= (1.9 - 0.25) && currentProjectile.position.x <= (1.9 + 0.25) &&
+                currentProjectile.position.z >= (-0.25) && currentProjectile.position.z <= (0.25)
+            ) {
+                firebase.database().ref(`projectiles/${id}`).remove();
+            }
+
+            if (
+                currentProjectile.position.x >= (-1.9 - 0.25) && currentProjectile.position.x <= (-1.9 + 0.25) &&
+                currentProjectile.position.z >= (-0.25) && currentProjectile.position.z <= (0.25)
+            ) {
+                firebase.database().ref(`projectiles/${id}`).remove();
+            }
+
+            // tables
+            if (
+                currentProjectile.position.x >= (-1.75 - 0.75) && currentProjectile.position.x <= (-1.75 + 0.75) &&
+                currentProjectile.position.y <= (-0.35 + 0.25) &&
+                currentProjectile.position.z >= (2 - 0.75) && currentProjectile.position.z <= (2 + 0.75)
+            ) {
+                firebase.database().ref(`projectiles/${id}`).remove();
+            }
+
+            if (
+                currentProjectile.position.x >= (-1.75 - 0.75) && currentProjectile.position.x <= (-1.75 + 0.75) &&
+                currentProjectile.position.y <= (-0.35 + 0.25) &&
+                currentProjectile.position.z >= (-2 - 0.75) && currentProjectile.position.z <= (-2 + 0.75)
+            ) {
+                firebase.database().ref(`projectiles/${id}`).remove();
+            }
+
+            if (
+                currentProjectile.position.x >= (1.75 - 0.75) && currentProjectile.position.x <= (1.75 + 0.75) &&
+                currentProjectile.position.y <= (-0.35 + 0.25) &&
+                currentProjectile.position.z >= (2 - 0.75) && currentProjectile.position.z <= (2 + 0.75)
+            ) {
+                firebase.database().ref(`projectiles/${id}`).remove();
+            }
+
+            if (
+                currentProjectile.position.x >= (1.75 - 0.75) && currentProjectile.position.x <= (1.75 + 0.75) &&
+                currentProjectile.position.y <= (-0.35 + 0.25) &&
+                currentProjectile.position.z >= (-2 - 0.75) && currentProjectile.position.z <= (-2 + 0.75)
+            ) {
+                firebase.database().ref(`projectiles/${id}`).remove();
+            }
+
+            // hit
             let projectileX = currentProjectile.position.x;
             let projectileY = currentProjectile.position.y;
             let projectileZ = currentProjectile.position.z;
@@ -261,6 +348,10 @@ window.onload = function() {
                 playerRef.update({
                     ammo: players[playerId].ammo + 1,
                 })
+
+                if (players[playerId].ammo > 0) {
+                    rig.querySelector("a-cursor").innerHTML = '';
+                }
             }
         }
         setTimeout(refill, 1000);
@@ -319,88 +410,267 @@ window.onload = function() {
                 }
 
                 if (key !== playerId){
-                    element.querySelector('a-entity').setAttribute("rotation", {
+                    element.querySelector('#infoTagEntity').setAttribute("rotation", {
                         x: 0,
                         y: nameTagAngles[key],
                         z: 0
                     })
-                    element.querySelector('a-entity').querySelector('#name').setAttribute("value", characterState.name);
-                    element.querySelector('a-entity').querySelector('#health').setAttribute("value", characterState.health + "%");
+                    element.querySelector('#infoTagEntity').querySelector('#name').setAttribute("value", characterState.name);
+                    element.querySelector('#infoTagEntity').querySelector('#health').setAttribute("value", characterState.health + "%");
 
+                    element.setAttribute("position", {
+                        x: characterState.position.x,
+                        y: characterState.position.y,
+                        z: characterState.position.z,
+                    });
+                    element.querySelector('#headEntity').setAttribute("rotation", {
+                        x: characterState.rotation.x,
+                        y: characterState.rotation.y,
+                        z: characterState.rotation.z,
+                    });
+                    element.querySelector('#bodyEntity').setAttribute("rotation", {
+                        x: 0,
+                        y: characterState.rotation.y,
+                        z: characterState.rotation.z,
+                    });
                 }
-
-                element.setAttribute("position", {
-                    x: characterState.position.x,
-                    y: characterState.position.y,
-                    z: characterState.position.z,
-                });
-                element.querySelector('a-box').setAttribute("rotation", {
-                    x: characterState.rotation.x,
-                    y: characterState.rotation.y,
-                    z: characterState.rotation.z,
-                });
             }
         })
         allPlayersRef.on("child_added", (snapshot) => {
             const addedPlayer = snapshot.val();
 
-            const characterEntity = document.createElement("a-entity");
-            characterEntity.setAttribute("position",{
+            let characterEntity = document.createElement("a-entity");
+            characterEntity.setAttribute("position", {
                 x: addedPlayer.position.x,
                 y: addedPlayer.position.y,
                 z: addedPlayer.position.z,
             });
 
-            const characterModel = document.createElement("a-box");
-            characterModel.setAttribute("height", 0.5);
-            characterModel.setAttribute("width", 0.5);
-            characterModel.setAttribute("depth", 0.5);
-            characterModel.setAttribute("color","#333536");
-            characterModel.setAttribute("shader","flat");
-            characterModel.setAttribute("rotation",{
+            // ========================================================================================
+
+            let headEntity = document.createElement("a-entity");
+            headEntity.setAttribute("id", "headEntity");
+            headEntity.setAttribute("scale", {x: 0.5, y: 0.5, z: 0.5,});
+            headEntity.setAttribute("rotation", {
                 x: addedPlayer.rotation.x,
                 y: addedPlayer.rotation.y,
                 z: addedPlayer.rotation.z,
             });
 
-            let smile = document.createElement("a-box");
-            smile.setAttribute("src", "img_1.png");
-            smile.setAttribute("height", 0.495);
-            smile.setAttribute("width", 0.495);
-            smile.setAttribute("depth", 0.495);
-            smile.setAttribute("shader","flat");
-            smile.setAttribute("position",{
+            let head1 = document.createElement("a-box");
+            head1.setAttribute("color", "tan");
+            head1.setAttribute("width", 0.8);
+            head1.setAttribute("height", 0.5);
+            head1.setAttribute("shader", "flat");
+            headEntity.append(head1);
+
+            let head2 = document.createElement("a-box");
+            head2.setAttribute("color", "tan");
+            head2.setAttribute("depth", 0.8);
+            head2.setAttribute("height", 0.5);
+            head2.setAttribute("shader", "flat");
+            headEntity.append(head2);
+
+            let headCorner1 = document.createElement("a-cylinder");
+            headCorner1.setAttribute("color", "tan");
+            headCorner1.setAttribute("radius", 0.1);
+            headCorner1.setAttribute("height", 0.5);
+            headCorner1.setAttribute("shader", "flat");
+            headCorner1.setAttribute("position", {x: 0.4, y: 0, z: 0.4});
+            headEntity.append(headCorner1);
+
+            let headCorner2 = document.createElement("a-cylinder");
+            headCorner2.setAttribute("color", "tan");
+            headCorner2.setAttribute("radius", 0.1);
+            headCorner2.setAttribute("height", 0.5);
+            headCorner2.setAttribute("shader", "flat");
+            headCorner2.setAttribute("position", {x: -0.4, y: 0, z: 0.4});
+            headEntity.append(headCorner2);
+
+            let headCorner3 = document.createElement("a-cylinder");
+            headCorner3.setAttribute("color", "tan");
+            headCorner3.setAttribute("radius", 0.1);
+            headCorner3.setAttribute("height", 0.5);
+            headCorner3.setAttribute("shader", "flat");
+            headCorner3.setAttribute("position", {x: 0.4, y: 0, z: -0.4});
+            headEntity.append(headCorner3);
+
+            let headCorner4 = document.createElement("a-cylinder");
+            headCorner4.setAttribute("color", "tan");
+            headCorner4.setAttribute("radius", 0.1);
+            headCorner4.setAttribute("height", 0.5);
+            headCorner4.setAttribute("shader", "flat");
+            headCorner4.setAttribute("position", {x: -0.4, y: 0, z: -0.4});
+            headEntity.append(headCorner4);
+
+            let eye1 = document.createElement("a-cylinder");
+            eye1.setAttribute("color", "black");
+            eye1.setAttribute("radius", 0.05);
+            eye1.setAttribute("height", 0.1);
+            eye1.setAttribute("shader", "flat");
+            eye1.setAttribute("rotation", {x: 90, y: 0, z: 0});
+            eye1.setAttribute("position", {x: -0.25, y: 0.1, z: -0.46});
+            headEntity.append(eye1);
+
+            let eye2 = document.createElement("a-cylinder");
+            eye2.setAttribute("color", "black");
+            eye2.setAttribute("radius", 0.05);
+            eye2.setAttribute("height", 0.1);
+            eye1.setAttribute("shader", "flat");
+            eye2.setAttribute("rotation", {x: 90, y: 0, z: 0});
+            eye2.setAttribute("position", {x: 0.25, y: 0.1, z: -0.46});
+            headEntity.append(eye2);
+
+            let mouth = document.createElement("a-box");
+            mouth.setAttribute("color", "black");
+            mouth.setAttribute("width", 0.7);
+            mouth.setAttribute("height", 0.05);
+            mouth.setAttribute("depth", 0.1);
+            mouth.setAttribute("shader", "flat");
+            mouth.setAttribute("position", {x: 0, y: -0.05, z: -0.46});
+            headEntity.append(mouth);
+
+            let hair1 = document.createElement("a-box");
+            hair1.setAttribute("color", "black");
+            hair1.setAttribute("width", 1.05);
+            hair1.setAttribute("height", 0.3);
+            hair1.setAttribute("depth", 0.925);
+            hair1.setAttribute("shader", "flat");
+            hair1.setAttribute("position", {x: 0, y: 0.35, z: 0.0625});
+            headEntity.append(hair1);
+
+            let hair2 = document.createElement("a-box");
+            hair2.setAttribute("color", "black");
+            hair2.setAttribute("width", 0.925);
+            hair2.setAttribute("height", 0.3);
+            hair2.setAttribute("depth", 1.05);
+            hair2.setAttribute("shader", "flat");
+            hair2.setAttribute("position", {x: 0, y: 0.35, z: 0});
+            headEntity.append(hair2);
+
+            let hair3 = document.createElement("a-box");
+            hair3.setAttribute("color", "black");
+            hair3.setAttribute("width", 1.05);
+            hair3.setAttribute("height", 0.3);
+            hair3.setAttribute("depth", 0.5);
+            hair3.setAttribute("shader", "flat");
+            hair3.setAttribute("position", {x: 0, y: 0.1, z: 0.275});
+            headEntity.append(hair3);
+
+            let hairCorner1 = document.createElement("a-cylinder");
+            hairCorner1.setAttribute("color", "black");
+            hairCorner1.setAttribute("radius", 0.125);
+            hairCorner1.setAttribute("height", 0.3);
+            hairCorner1.setAttribute("depth", 0.5);
+            hairCorner1.setAttribute("shader", "flat");
+            hairCorner1.setAttribute("position", {x: 0.4, y: 0.35, z: -0.4});
+            headEntity.append(hairCorner1);
+
+            let hairCorner2 = document.createElement("a-cylinder");
+            hairCorner2.setAttribute("color", "black");
+            hairCorner2.setAttribute("radius", 0.125);
+            hairCorner2.setAttribute("height", 0.3);
+            hairCorner2.setAttribute("depth", 0.5);
+            hairCorner2.setAttribute("shader", "flat");
+            hairCorner2.setAttribute("position", {x: -0.4, y: 0.35, z: -0.4});
+            headEntity.append(hairCorner2);
+
+            characterEntity.append(headEntity);
+
+            // ========================================================================================
+
+            let bodyEntity = document.createElement("a-entity");
+            bodyEntity.setAttribute("id", "bodyEntity");
+            bodyEntity.setAttribute("scale", {x: 0.5, y: 0.5, z: 0.5});
+            bodyEntity.setAttribute("position", {x: 0, y: -0.35, z: 0});
+            bodyEntity.setAttribute("rotation", {
                 x: 0,
-                y: 0,
-                z: -0.005,
+                y: addedPlayer.rotation.y,
+                z: addedPlayer.rotation.z,
             });
 
-            characterModel.append(smile);
-            characterEntity.append(characterModel)
+            let body = document.createElement("a-box");
+            body.setAttribute("shader", "flat");
+            body.setAttribute("color", "red");
+            body.setAttribute("width", 1.05);
+            body.setAttribute("height", 0.75);
+            body.setAttribute("depth", 1.05);
+            bodyEntity.append(body);
+
+            let apron1 = document.createElement("a-box");
+            apron1.setAttribute("shader", "flat");
+            apron1.setAttribute("color", "#D9E2E6");
+            apron1.setAttribute("width", 1);
+            apron1.setAttribute("height", 0.6);
+            apron1.setAttribute("depth", 0.05);
+            apron1.setAttribute("position", {x: 0, y: 0, z: -0.51});
+            bodyEntity.append(apron1);
+
+            let apron2 = document.createElement("a-box");
+            apron2.setAttribute("shader", "flat");
+            apron2.setAttribute("color", "#D9E2E6");
+            apron2.setAttribute("width", 1.075);
+            apron2.setAttribute("height", 0.05);
+            apron2.setAttribute("depth", 1.075);
+            bodyEntity.append(apron2);
+
+            let button1 = document.createElement("a-cylinder");
+            button1.setAttribute("shader", "flat");
+            button1.setAttribute("color", "black");
+            button1.setAttribute("radius", 0.05);
+            button1.setAttribute("height", 0.1);
+            button1.setAttribute("rotation", {x: 90, y: 0, z: 0});
+            button1.setAttribute("position", {x: 0.3, y: 0.15, z: -0.5});
+            bodyEntity.append(button1);
+
+            let button2 = document.createElement("a-cylinder");
+            button2.setAttribute("shader", "flat");
+            button2.setAttribute("color", "black");
+            button2.setAttribute("radius", 0.05);
+            button2.setAttribute("height", 0.1);
+            button2.setAttribute("rotation", {x: 90, y: 0, z: 0});
+            button2.setAttribute("position", {x: -0.3, y: 0.15, z: -0.5});
+            bodyEntity.append(button2);
+
+            let button3 = document.createElement("a-cylinder");
+            button3.setAttribute("shader", "flat");
+            button3.setAttribute("color", "black");
+            button3.setAttribute("radius", 0.05);
+            button3.setAttribute("height", 0.1);
+            button3.setAttribute("rotation", {x: 90, y: 0, z: 0});
+            button3.setAttribute("position", {x: 0.3, y: -0.15, z: -0.5});
+            bodyEntity.append(button3);
+
+            let button4 = document.createElement("a-cylinder");
+            button4.setAttribute("shader", "flat");
+            button4.setAttribute("color", "black");
+            button4.setAttribute("radius", 0.05);
+            button4.setAttribute("height", 0.1);
+            button4.setAttribute("rotation", {x: 90, y: 0, z: 0});
+            button4.setAttribute("position", {x: -0.3, y: -0.15, z: -0.5});
+            bodyEntity.append(button4);
+
+            // ========================================================================================
+
+            characterEntity.append(bodyEntity);
 
             if (addedPlayer.id !== playerId) {
                 let infoTagEntity = document.createElement("a-entity");
+                infoTagEntity.setAttribute("id", "infoTagEntity");
+                infoTagEntity.setAttribute("position", {x: 0, y: 0.4, z: 0});
 
                 let name = document.createElement("a-text");
                 name.setAttribute("id", "name");
                 name.setAttribute("value", addedPlayer.name);
-                name.setAttribute("color", "white");
-                name.setAttribute("position", {
-                    x: -0.3,
-                    y: 0.675,
-                    z: 0,
-                });
+                name.setAttribute("color", "black");
+                name.setAttribute("position", {x: -0.3, y: 0.225, z: 0});
                 infoTagEntity.append(name);
 
                 let health = document.createElement("a-text");
                 health.setAttribute("id", "health");
                 health.setAttribute("value", addedPlayer.health + "%");
-                health.setAttribute("color", "white");
-                health.setAttribute("position", {
-                    x: -0.3,
-                    y: 0.45,
-                    z: 0,
-                });
+                health.setAttribute("color", "black");
+                health.setAttribute("position", {x: -0.3, y: 0, z: 0});
                 infoTagEntity.append(health);
 
                 characterEntity.append(infoTagEntity);
@@ -421,7 +691,7 @@ window.onload = function() {
                 const projectileState = projectiles[key];
                 let element = projectileElements[key];
 
-                element.setAttribute("position",{
+                element.setAttribute("position", {
                     x: projectileState.position.x,
                     y: projectileState.position.y,
                     z: projectileState.position.z,

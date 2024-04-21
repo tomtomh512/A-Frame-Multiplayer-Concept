@@ -33,6 +33,8 @@ a-scene {
 #enter-name > input {
     font-size: 20pt;
     border: 20px;
+    border-radius: 5px;
+    padding: 5px;
 }
 
 #health-container {
@@ -44,6 +46,7 @@ a-scene {
     display: inline-block;
     position: relative;
     top: -180px;
+    border-radius: 5px;
 }
 
 #healthbar {
@@ -53,6 +56,7 @@ a-scene {
     margin: 0;
     position: relative;
     top: -40px;
+    border-radius: 5px;
 }
 
 #healthbar-red {
@@ -61,6 +65,7 @@ a-scene {
     height: 40px;
     margin: 0;
     transition: 1s;
+    border-radius: 5px;
 }
 
 #information {
