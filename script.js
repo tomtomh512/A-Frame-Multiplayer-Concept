@@ -15,6 +15,7 @@ window.onload = function() {
 
     let scene = document.querySelector("a-scene");
     let rig = document.getElementById("camera");
+
     rig.setAttribute("position", {
         x: getSpawnXPoint(),
         y: 10,
