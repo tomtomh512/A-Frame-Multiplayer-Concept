@@ -443,7 +443,7 @@ window.onload = function() {
             const addedPlayer = snapshot.val();
 
             let characterEntity = document.createElement("a-entity");
-            characterEntity.setAttribute("sound", {src:"#spitSound", loop: false, volume: 3, poolSize: 10})
+            characterEntity.setAttribute("sound", {src:"#throwSound", loop: false, volume: 10, poolSize: 10})
             characterEntity.setAttribute("position", {
                 x: addedPlayer.position.x,
                 y: addedPlayer.position.y,
