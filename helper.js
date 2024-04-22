@@ -20,3 +20,16 @@ function atanInDegrees(y, x) {
 
     return angleInDegrees;
 }
+
+function getSpawnXPoint() {
+    const ranges = [
+        { min: -3.25, max: -3 },
+        { min: -0.5, max: 0.5 },
+        { min: 3, max: 3.25 }
+    ];
+
+    const randomRangeIndex = Math.floor(Math.random() * ranges.length);
+    const range = ranges[randomRangeIndex];
+
+    return Math.random() * (range.max - range.min) + range.min;
+}
