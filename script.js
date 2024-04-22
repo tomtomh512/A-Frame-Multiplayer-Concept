@@ -171,7 +171,6 @@ window.onload = function() {
         }
     }
 
-    let collisionRange = 0.25;
     function moveBullet(projectileKey) {
         let currentProjectile = projectiles[projectileKey];
         if (currentProjectile !== undefined) {
@@ -185,8 +184,8 @@ window.onload = function() {
             let dz = cosInDegrees(currentProjectile.rotation.y);
 
             // move, direct set
-            let magnitude = 10; //smoothness, more is slower, laggier, also affects speed so balance
-            let timeout = 25; // speed, lower - faster, cant be too low - overload server if spammed
+            let magnitude = 20; //smoothness, more is slower, laggier, also affects speed so balance
+            let timeout = 10; // speed, lower - faster, cant be too low - overload server if spammed
             currentProjectile.position.x -= dx / magnitude;
             currentProjectile.position.y += dy / magnitude;
             currentProjectile.position.z -= dz / magnitude;
@@ -194,7 +193,7 @@ window.onload = function() {
 
             // out of bounds
             if (
-                Math.abs(currentProjectile.position.x) >= 5.5 ||
+                Math.abs(currentProjectile.position.x) >= 4 ||
                 Math.abs(currentProjectile.position.z) >= 5.5 ||
                 currentProjectile.position.y <= -0.65 ||
                 currentProjectile.position.y >= 1.75
