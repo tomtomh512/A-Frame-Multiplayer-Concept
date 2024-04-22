@@ -148,6 +148,9 @@ window.onload = function() {
         if (hasMoved) {
 
             if (players[playerId].ammo > 0) {
+
+                playerElements[playerId].components.sound.playSound();
+
                 let position = {
                     x: rig.getAttribute("position").x,
                     y: rig.getAttribute("position").y,
@@ -440,6 +443,7 @@ window.onload = function() {
             const addedPlayer = snapshot.val();
 
             let characterEntity = document.createElement("a-entity");
+            characterEntity.setAttribute("sound", {src:"#spitSound", loop: false, volume: 3, poolSize: 10})
             characterEntity.setAttribute("position", {
                 x: addedPlayer.position.x,
                 y: addedPlayer.position.y,
@@ -591,7 +595,7 @@ window.onload = function() {
 
             let body = document.createElement("a-box");
             body.setAttribute("shader", "flat");
-            body.setAttribute("color", "red");
+            body.setAttribute("color", "#E35252");
             body.setAttribute("width", 1.05);
             body.setAttribute("height", 0.75);
             body.setAttribute("depth", 1.05);
