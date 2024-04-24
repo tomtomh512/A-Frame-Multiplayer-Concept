@@ -1,7 +1,4 @@
-let message1 = "You ded :( You went out of bounds";
 let message2 = "You ded :( You took too many sushi rolls to the face";
-let outsideOfZone = false;
-let insideOfZone = true;
 let hasMoved = false;
 
 window.onload = function() {
@@ -41,46 +38,6 @@ window.onload = function() {
             players[playerId].position.y = rig.getAttribute("position").y;
             players[playerId].position.z = rig.getAttribute("position").z;
             playerRef.set(players[playerId]);
-
-            // let playerX = players[playerId].position.x;
-            // let playerZ = players[playerId].position.z;
-            // let softLimit = 4;
-            // let hardLimit = 6;
-            //
-            // let alert = document.createElement("a-text");
-            // alert.setAttribute("value", "Go back to the zone");
-            // alert.setAttribute("scale", {
-            //     x: 0.125,
-            //     y: 0.125,
-            //     z: 0.125
-            // });
-            // alert.setAttribute("position", {
-            //     x: -0.125,
-            //     y: 0,
-            //     z: 0.75
-            // });
-            //
-            // if (playerX < -softLimit || playerX > softLimit || playerZ < -softLimit || playerZ > softLimit){
-            //
-            //     insideOfZone = false;
-            //     if (!outsideOfZone){ decreaseHealth(); }
-            //     outsideOfZone = true;
-            //     rig.querySelector("a-cursor").append(alert);
-            // } else {
-            //
-            //     insideOfZone = true;
-            //     outsideOfZone = false;
-            //     rig.querySelector("a-cursor").innerHTML = '';
-            // }
-            //
-            // if (playerX < -hardLimit || playerX > hardLimit || playerZ < -hardLimit || playerZ > hardLimit){
-            //     playerElements[playerId].remove();
-            //     playerRef.remove();
-            //     scene.remove();
-            //     document.getElementById("game-container").remove();
-            //     document.getElementById("game-over-container").style.display = "inline-block";
-            //     document.getElementById("message").innerHTML = message1;
-            // }
         }
     }
 
@@ -94,29 +51,8 @@ window.onload = function() {
         }
     }
 
-    function decreaseHealth() {
-        if (players[playerId] !== undefined){
-
-            playerRef.update({
-                health: players[playerId].health - 5,
-            });
-
-            if (players[playerId].health <= 5){
-                playerElements[playerId].remove();
-                playerRef.remove();
-                scene.remove();
-                document.getElementById("game-container").remove();
-                document.getElementById("game-over-container").style.display = "inline-block";
-                document.getElementById("message").innerHTML = message1;
-            }
-
-            if (insideOfZone == false){
-                setTimeout(decreaseHealth, 1000);
-            }
-        }
-    }
-
     let count = 0; // ain't no way this going over 9007199254740991
+    let landed = 0;
     function createBullet() {
 
         let alert = document.createElement("a-text");
@@ -272,6 +208,8 @@ window.onload = function() {
                         currentProjectile.from !== currentPlayerId
                     ) {
 
+                        landed ++;
+
                         // playerElements[playerId].components.sound.playSound();
 
                         //if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < collisionRange && currentProjectile.from !== currentPlayerId) {
@@ -401,7 +339,7 @@ window.onload = function() {
                         scene.remove();
                         document.getElementById("game-container").remove();
                         document.getElementById("game-over-container").style.display = "inline-block";
-                        document.getElementById("message").innerHTML = message2;
+                        document.getElementById("message").innerHTML = `Accuracy: ${landed} / ${count}`;
                     }
 
                     document.getElementById("ammo-value").innerHTML = `Ammo: ${characterState.ammo}`;
@@ -456,6 +394,14 @@ window.onload = function() {
                 y: addedPlayer.rotation.y,
                 z: addedPlayer.rotation.z,
             });
+
+            // let smile = document.createElement("a-box");
+            // smile.setAttribute("src", "Pictures/justin wang.png");
+            // smile.setAttribute("width", 0.8);
+            // smile.setAttribute("height", 0.5);
+            // smile.setAttribute("shader", "flat");
+            // smile.setAttribute("position", {x: 0, y: -0.01, z: -0.015});
+            // headEntity.append(smile);
 
             let head1 = document.createElement("a-box");
             head1.setAttribute("color", "tan");
