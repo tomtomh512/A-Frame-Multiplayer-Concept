@@ -1,4 +1,3 @@
-let message2 = "You ded :( You took too many sushi rolls to the face";
 let hasMoved = false;
 
 window.onload = function() {
@@ -31,6 +30,8 @@ window.onload = function() {
     function handleArrowPress() {
         if (players[playerId] !== undefined) {
 
+            document.getElementById("instruction-card").style.display = "none";
+
             hasMoved = true;
             updateInfoTag();
 
@@ -57,7 +58,7 @@ window.onload = function() {
 
         let alert = document.createElement("a-text");
         alert.setAttribute("value", "No ammo");
-        alert.setAttribute("color", "black");
+        alert.setAttribute("color", "white");
         alert.setAttribute("scale", {
             x: 0.065,
             y: 0.065,
@@ -339,7 +340,6 @@ window.onload = function() {
                         scene.remove();
                         document.getElementById("game-container").remove();
                         document.getElementById("game-over-container").style.display = "inline-block";
-                        document.getElementById("message").innerHTML = `Accuracy: ${landed} / ${count}`;
                     }
 
                     document.getElementById("ammo-value").innerHTML = `Ammo: ${characterState.ammo}`;
@@ -394,14 +394,6 @@ window.onload = function() {
                 y: addedPlayer.rotation.y,
                 z: addedPlayer.rotation.z,
             });
-
-            // let smile = document.createElement("a-box");
-            // smile.setAttribute("src", "Pictures/justin wang.png");
-            // smile.setAttribute("width", 0.8);
-            // smile.setAttribute("height", 0.5);
-            // smile.setAttribute("shader", "flat");
-            // smile.setAttribute("position", {x: 0, y: -0.01, z: -0.015});
-            // headEntity.append(smile);
 
             let head1 = document.createElement("a-box");
             head1.setAttribute("color", "tan");
@@ -462,7 +454,7 @@ window.onload = function() {
             eye2.setAttribute("color", "black");
             eye2.setAttribute("radius", 0.05);
             eye2.setAttribute("height", 0.1);
-            eye1.setAttribute("shader", "flat");
+            eye2.setAttribute("shader", "flat");
             eye2.setAttribute("rotation", {x: 90, y: 0, z: 0});
             eye2.setAttribute("position", {x: 0.25, y: 0.1, z: -0.46});
             headEntity.append(eye2);

@@ -84,4 +84,33 @@ a-scene {
 #game-over-container {
     display: none;
     color: white;
+    padding: 20px;
+    font-size: 20pt;
+}
+
+#game-over-container > img {
+    height: 500px;
+    aspect-ratio: 1;
+}
+
+#instruction-card {
+    position: fixed;
+    top: 12%;
+    right: calc(50% - 40vw);
+    width: 80vw;
+    padding: 10px;
+    background: rgba(0,0,0,0.8);
+    border-radius: 15px;
+    z-index: 999;
+    user-select: none;
+    color: white;
+    font-size: 20pt;
+}
+
+#instruction-card > div{
+    display: flex;
+}
+
+#instruction-card > div > span {
+    flex: 1;
 }
