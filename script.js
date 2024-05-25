@@ -1,10 +1,10 @@
 let hasMoved = false;
 
 window.onload = function() {
-    let playerId; // string of who we are logged in as
-    let playerRef; // firebase ref
-    let players = {}; // local list of state where every character is
-    let playerElements = {}; // house player elements
+    let playerId;                       // string of who we are logged in as
+    let playerRef;                      // firebase ref
+    let players = {};               // local list of state where every character is
+    let playerElements = {};        // house player elements
     let projectiles = {};
     let projectileElements = {};
     let nameTagAngles = {};
@@ -52,7 +52,7 @@ window.onload = function() {
         }
     }
 
-    let count = 0; // ain't no way this going over 9007199254740991
+    let count = 0;      // ain't no way this going over 9007199254740991
     let landed = 0;
     function createBullet() {
 
@@ -140,52 +140,14 @@ window.onload = function() {
             }
 
             // pillars
-            if (
-                currentProjectile.position.x >= (1.9 - 0.25) && currentProjectile.position.x <= (1.9 + 0.25) &&
-                currentProjectile.position.z >= (-0.25) && currentProjectile.position.z <= (0.25)
-            ) {
-                firebase.database().ref(`projectiles/${id}`).remove();
-            }
-
-            if (
-                currentProjectile.position.x >= (-1.9 - 0.25) && currentProjectile.position.x <= (-1.9 + 0.25) &&
-                currentProjectile.position.z >= (-0.25) && currentProjectile.position.z <= (0.25)
-            ) {
-                firebase.database().ref(`projectiles/${id}`).remove();
-            }
+            pillarCollision(currentProjectile, id, 1.9,  0);
+            pillarCollision(currentProjectile, id, -1.9,  0);
 
             // tables
-            if (
-                currentProjectile.position.x >= (-1.75 - 0.75) && currentProjectile.position.x <= (-1.75 + 0.75) &&
-                currentProjectile.position.y <= (-0.35 + 0.25) &&
-                currentProjectile.position.z >= (2 - 0.75) && currentProjectile.position.z <= (2 + 0.75)
-            ) {
-                firebase.database().ref(`projectiles/${id}`).remove();
-            }
-
-            if (
-                currentProjectile.position.x >= (-1.75 - 0.75) && currentProjectile.position.x <= (-1.75 + 0.75) &&
-                currentProjectile.position.y <= (-0.35 + 0.25) &&
-                currentProjectile.position.z >= (-2 - 0.75) && currentProjectile.position.z <= (-2 + 0.75)
-            ) {
-                firebase.database().ref(`projectiles/${id}`).remove();
-            }
-
-            if (
-                currentProjectile.position.x >= (1.75 - 0.75) && currentProjectile.position.x <= (1.75 + 0.75) &&
-                currentProjectile.position.y <= (-0.35 + 0.25) &&
-                currentProjectile.position.z >= (2 - 0.75) && currentProjectile.position.z <= (2 + 0.75)
-            ) {
-                firebase.database().ref(`projectiles/${id}`).remove();
-            }
-
-            if (
-                currentProjectile.position.x >= (1.75 - 0.75) && currentProjectile.position.x <= (1.75 + 0.75) &&
-                currentProjectile.position.y <= (-0.35 + 0.25) &&
-                currentProjectile.position.z >= (-2 - 0.75) && currentProjectile.position.z <= (-2 + 0.75)
-            ) {
-                firebase.database().ref(`projectiles/${id}`).remove();
-            }
+            tableCollision(currentProjectile, id, -1.75, 2);
+            tableCollision(currentProjectile, id, 1.75, -2);
+            tableCollision(currentProjectile, id, -1.75, -2);
+            tableCollision(currentProjectile, id, 1.75, 2);
 
             // hit
             let projectileX = currentProjectile.position.x;
@@ -242,6 +204,25 @@ window.onload = function() {
         }
     }
 
+    function pillarCollision(currentProjectile, id, x, z) {
+        if (
+            currentProjectile.position.x >= (x - 0.25) && currentProjectile.position.x <= (x + 0.25) &&
+            currentProjectile.position.z >= (z - 0.25) && currentProjectile.position.z <= (z + 0.25)
+        ) {
+            firebase.database().ref(`projectiles/${id}`).remove();
+        }
+    }
+
+    function tableCollision(currentProjectile, id, x, z) {
+        if (
+            currentProjectile.position.x >= (x - 0.75) && currentProjectile.position.x <= (x + 0.75) &&
+            currentProjectile.position.y <= (-0.35 + 0.25) &&
+            currentProjectile.position.z >= (z - 0.75) && currentProjectile.position.z <= (z + 0.75)
+        ) {
+            firebase.database().ref(`projectiles/${id}`).remove();
+        }
+    }
+
     function updateInfoTag() {
         for (let key in players){
             let currentPlayer = players[key];
@@ -287,7 +268,7 @@ window.onload = function() {
     }
 
     function initGame() {
-        refill(); // refill ammo
+        refill();       // refill ammo
 
         // when user moves or rotates, works better than keydown idk why
         new KeyPressListener("KeyW", () => handleArrowPress());
