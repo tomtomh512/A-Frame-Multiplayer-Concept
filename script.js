@@ -376,7 +376,7 @@ window.onload = function() {
             const addedPlayer = snapshot.val();
 
             let characterEntity = document.createElement("a-entity");
-            characterEntity.setAttribute("sound", {src:"#hurtSound", loop: false, volume: 3, poolSize: 10});
+            characterEntity.setAttribute("sound", {src:"#hurtSound", loop: false, volume: 18, poolSize: 10});
             characterEntity.setAttribute("position", {
                 x: addedPlayer.position.x,
                 y: addedPlayer.position.y,
@@ -387,7 +387,7 @@ window.onload = function() {
 
             let headEntity = document.createElement("a-entity");
             headEntity.setAttribute("id", "headEntity");
-            headEntity.setAttribute("sound", {src:"#throwSound", loop: false, volume: 10, poolSize: 10});
+            headEntity.setAttribute("sound", {src:"#throwSound", loop: false, volume: 18, poolSize: 10});
             headEntity.setAttribute("scale", {x: 0.5, y: 0.5, z: 0.5,});
             headEntity.setAttribute("rotation", {
                 x: addedPlayer.rotation.x,
