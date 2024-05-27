@@ -10,28 +10,16 @@ window.onload = function() {
     let nameTagAngles = {};
 
     let scene = document.querySelector("a-scene");
-    let rig = document.getElementById("camera");
-
-    rig.setAttribute("position", {
-        x: getSpawnXPoint(),
-        y: 10,
-        z: Math.random() * (3.25 - (-3.25)) + (-3.25)
-    });
-    rig.setAttribute("rotation", {
-        x: 0,
-        y: Math.floor(Math.random() * 360),
-        z: 0
-    });
-
-    rig.components["look-controls"].yawObject.rotation.y = rig.getAttribute("rotation").y * Math.PI / 180;
-
     const playerNameInput = document.querySelector("#player-name");
+
+    let rig = document.getElementById("camera");
+    rig.setAttribute("position", { x: getSpawnXPoint(), y: 10, z: Math.random() * (3.25 - (-3.25)) + (-3.25) });
+    rig.setAttribute("rotation", { x: 0, y: Math.floor(Math.random() * 360), z: 0 });
+    rig.components["look-controls"].yawObject.rotation.y = rig.getAttribute("rotation").y * Math.PI / 180;
 
     function handleArrowPress() {
         if (players[playerId] !== undefined) {
-
             document.getElementById("instruction-card").style.display = "none";
-
             hasMoved = true;
             updateInfoTag();
 
@@ -59,19 +47,10 @@ window.onload = function() {
         let alert = document.createElement("a-text");
         alert.setAttribute("value", "No ammo");
         alert.setAttribute("color", "white");
-        alert.setAttribute("scale", {
-            x: 0.065,
-            y: 0.065,
-            z: 0.065
-        });
-        alert.setAttribute("position", {
-            x: 0.01,
-            y: 0,
-            z: 0.75
-        });
+        alert.setAttribute("scale", { x: 0.065, y: 0.065, z: 0.065 });
+        alert.setAttribute("position", {x: 0.01, y: 0, z: 0.75 });
 
         if (hasMoved) {
-
             if (players[playerId].ammo > 0) {
 
                 playerElements[playerId].querySelector('#headEntity').components.sound.playSound();
@@ -86,6 +65,7 @@ window.onload = function() {
                     y: rig.getAttribute("rotation").y,
                     z: rig.getAttribute("rotation").z,
                 }
+
                 let uniqueId = playerId + count.toString();
                 const projectileRef = firebase.database().ref(`projectiles/${uniqueId}`);
 
@@ -97,12 +77,12 @@ window.onload = function() {
                 })
 
                 count++;
-
                 playerRef.update({
                     ammo: players[playerId].ammo - 1,
                 })
 
                 moveBullet(uniqueId);
+
             } else {
                 rig.querySelector("a-cursor").append(alert);
             }
@@ -130,12 +110,8 @@ window.onload = function() {
             projectileRef.set(projectiles[id]);
 
             // out of bounds
-            if (
-                Math.abs(currentProjectile.position.x) >= 4 ||
-                Math.abs(currentProjectile.position.z) >= 5.5 ||
-                currentProjectile.position.y <= -0.65 ||
-                currentProjectile.position.y >= 1.75
-            ) {
+            if ( Math.abs(currentProjectile.position.x) >= 4 || Math.abs(currentProjectile.position.z) >= 5.5 ||
+                currentProjectile.position.y <= -0.65 || currentProjectile.position.y >= 1.75) {
                 firebase.database().ref(`projectiles/${id}`).remove();
             }
 
@@ -170,12 +146,8 @@ window.onload = function() {
                         projectileZ > (playerZ - 0.275) && projectileZ < (playerZ + 0.275) &&
                         currentProjectile.from !== currentPlayerId
                     ) {
-
                         landed ++;
 
-                        // playerElements[playerId].components.sound.playSound();
-
-                        //if (calculateDistance(projectileX, projectileY, projectileZ, playerX, playerY, playerZ) < collisionRange && currentProjectile.from !== currentPlayerId) {
                         firebase.database().ref(`projectiles/${id}`).remove();
 
                         // console.log("hit");
@@ -190,7 +162,7 @@ window.onload = function() {
                         }
 
                         flag = true;
-                        break; // so that loop doesnt continue unneccessarily
+                        break;
                     }
                 }
             }
@@ -658,6 +630,7 @@ window.onload = function() {
         allProjectilesRef.on("child_removed", (snapshot) => {
             const id = snapshot.val().id;
             scene.remove(projectileElements[id]);
+            delete projectiles[id];
             delete projectileElements[id];
         })
 
