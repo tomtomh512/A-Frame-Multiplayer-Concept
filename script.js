@@ -21,27 +21,51 @@ window.onload = function() {
         if (players[playerId] !== undefined) {
             document.getElementById("instruction-card").style.display = "none";
             hasMoved = true;
-            updateInfoTag();
 
             players[playerId].position.x = rig.getAttribute("position").x;
             players[playerId].position.y = rig.getAttribute("position").y;
             players[playerId].position.z = rig.getAttribute("position").z;
-            playerRef.set(players[playerId]);
+
         }
     }
 
     function handleMouseMove() {
         if (players[playerId] !== undefined) {
-            updateInfoTag();
             players[playerId].rotation.x = rig.getAttribute("rotation").x;
             players[playerId].rotation.y = rig.getAttribute("rotation").y;
             players[playerId].rotation.z = rig.getAttribute("rotation").z;
-            playerRef.set(players[playerId]);
         }
     }
 
-    let count = 0;      // ain't no way this going over 9007199254740991
-    let landed = 0;
+    function updateInfoTag() {
+        for (let key in players){
+            let currentPlayer = players[key];
+            if (currentPlayer !== undefined && key !== playerId){
+                let id = currentPlayer.id;
+                let tagX = currentPlayer.position.x;
+                let tagZ = currentPlayer.position.z;
+
+                let userX = players[playerId].position.x;
+                let userZ = players[playerId].position.z;
+
+                let longitude = userX - tagX;
+                let latitude = userZ - tagZ;
+
+                let angle = 0;
+                if (longitude !== 0 && latitude !== 0){
+                    if (latitude > 0){
+                        angle = atanInDegrees(longitude, latitude);
+                    } else if (latitude < 0){
+                        angle = 180 + atanInDegrees(longitude, latitude);
+                    }
+                }
+
+                nameTagAngles[key] = angle;
+            }
+        }
+    }
+
+    let count = 0;
     function createBullet() {
 
         let alert = document.createElement("a-text");
@@ -81,7 +105,7 @@ window.onload = function() {
                     ammo: players[playerId].ammo - 1,
                 })
 
-                moveBullet(uniqueId);
+                // moveBullet(uniqueId);
 
             } else {
                 rig.querySelector("a-cursor").append(alert);
@@ -89,12 +113,8 @@ window.onload = function() {
         }
     }
 
-    function moveBullet(projectileKey) {
-        let currentProjectile = projectiles[projectileKey];
+    function moveBullet(currentProjectile, projectileRef, magnitude) {
         if (currentProjectile !== undefined) {
-            let flag = false; // prevents setTimeout from running again after bullet is removed
-            let id = currentProjectile.id;
-            let projectileRef = firebase.database().ref(`projectiles/${id}`);
 
             // velocity
             let dx = sinInDegrees(currentProjectile.rotation.y);
@@ -102,28 +122,36 @@ window.onload = function() {
             let dz = cosInDegrees(currentProjectile.rotation.y);
 
             // move, direct set
-            let magnitude = 20; //smoothness, more is slower, laggier, also affects speed so balance
-            let timeout = 10; // speed, lower - faster, cant be too low - overload server if spammed
+            // let magnitude = 15; //smoothness, more is slower, laggier, also affects speed so balance
             currentProjectile.position.x -= dx / magnitude;
             currentProjectile.position.y += dy / magnitude;
             currentProjectile.position.z -= dz / magnitude;
-            projectileRef.set(projectiles[id]);
+
+            projectileRef.set(currentProjectile);
+        }
+    }
+
+    function bulletCollision(currentProjectile, projectileRef) {
+        if (currentProjectile !== undefined) {
 
             // out of bounds
-            if ( Math.abs(currentProjectile.position.x) >= 4 || Math.abs(currentProjectile.position.z) >= 5.5 ||
-                currentProjectile.position.y <= -0.65 || currentProjectile.position.y >= 1.75) {
-                firebase.database().ref(`projectiles/${id}`).remove();
+            if (Math.abs(currentProjectile.position.x) >= 4 ||
+                Math.abs(currentProjectile.position.z) >= 5.5 ||
+                currentProjectile.position.y <= -0.65 ||
+                currentProjectile.position.y >= 1.75) {
+
+                projectileRef.remove();
             }
 
             // pillars
-            pillarCollision(currentProjectile, id, 1.9,  0);
-            pillarCollision(currentProjectile, id, -1.9,  0);
+            pillarCollision(currentProjectile, projectileRef, 1.9,  0);
+            pillarCollision(currentProjectile, projectileRef, -1.9,  0);
 
             // tables
-            tableCollision(currentProjectile, id, -1.75, 2);
-            tableCollision(currentProjectile, id, 1.75, -2);
-            tableCollision(currentProjectile, id, -1.75, -2);
-            tableCollision(currentProjectile, id, 1.75, 2);
+            tableCollision(currentProjectile, projectileRef, -1.75, 2);
+            tableCollision(currentProjectile, projectileRef, 1.75, -2);
+            tableCollision(currentProjectile, projectileRef, -1.75, -2);
+            tableCollision(currentProjectile, projectileRef, 1.75, 2);
 
             // hit
             let projectileX = currentProjectile.position.x;
@@ -139,18 +167,14 @@ window.onload = function() {
                     let playerY = currentPlayer.position.y;
                     let playerZ = currentPlayer.position.z;
 
-                    let d = 0.3;
-
                     if (projectileX > (playerX - 0.275) && projectileX < (playerX + 0.275) &&
                         projectileY > (playerY + 0.275 - 0.8) && projectileY < (playerY + 0.275) &&
                         projectileZ > (playerZ - 0.275) && projectileZ < (playerZ + 0.275) &&
                         currentProjectile.from !== currentPlayerId
                     ) {
-                        landed ++;
 
-                        firebase.database().ref(`projectiles/${id}`).remove();
+                        projectileRef.remove();
 
-                        // console.log("hit");
                         currentPlayerRef.update({
                             health: currentPlayer.health - 5,
                         })
@@ -160,87 +184,75 @@ window.onload = function() {
                             playerElements[currentPlayerId].remove();
                             currentPlayerRef.remove();
                         }
-
-                        flag = true;
-                        break;
                     }
+
                 }
             }
 
-            if (flag == false){
-                setTimeout(
-                    function () { moveBullet(id) },
-                    timeout
-                );
-            }
         }
     }
 
-    function pillarCollision(currentProjectile, id, x, z) {
+    function pillarCollision(currentProjectile, projectileRef, x, z) {
         if (
             currentProjectile.position.x >= (x - 0.25) && currentProjectile.position.x <= (x + 0.25) &&
             currentProjectile.position.z >= (z - 0.25) && currentProjectile.position.z <= (z + 0.25)
         ) {
-            firebase.database().ref(`projectiles/${id}`).remove();
+            projectileRef.remove();
         }
     }
 
-    function tableCollision(currentProjectile, id, x, z) {
+    function tableCollision(currentProjectile, projectileRef, x, z) {
         if (
             currentProjectile.position.x >= (x - 0.75) && currentProjectile.position.x <= (x + 0.75) &&
             currentProjectile.position.y <= (-0.35 + 0.25) &&
             currentProjectile.position.z >= (z - 0.75) && currentProjectile.position.z <= (z + 0.75)
         ) {
-            firebase.database().ref(`projectiles/${id}`).remove();
-        }
-    }
-
-    function updateInfoTag() {
-        for (let key in players){
-            let currentPlayer = players[key];
-            if (currentPlayer !== undefined && key !== playerId){
-                let id = currentPlayer.id;
-                let currentPlayerRef = firebase.database().ref(`players/${id}`);
-                let tagX = currentPlayer.position.x;
-                let tagZ = currentPlayer.position.z;
-
-                let userX = players[playerId].position.x;
-                let userZ = players[playerId].position.z;
-
-                let longitude = userX - tagX;
-                let latitude = userZ - tagZ;
-
-                let angle = 0;
-                if (longitude !== 0 && latitude !== 0){
-                    if (latitude > 0){
-                        angle = atanInDegrees(longitude, latitude);
-                    } else if (latitude < 0){
-                        angle = 180 + atanInDegrees(longitude, latitude);
-                    }
-                }
-
-                nameTagAngles[key] = angle;
-            }
+            projectileRef.remove();
         }
     }
 
     function refill() {
         if (players[playerId] !== undefined) {
             if (players[playerId].ammo < 10){
-                playerRef.update({
-                    ammo: players[playerId].ammo + 1,
-                })
+                players[playerId].ammo ++;
 
                 if (players[playerId].ammo > 0) {
                     rig.querySelector("a-cursor").innerHTML = '';
                 }
             }
         }
-        setTimeout(refill, 1000);
+    }
+
+    let refillCounter = 0;
+    let milliseconds = 30;
+    function loop() {
+
+        if (players[playerId] !== undefined) {
+            playerRef.set(players[playerId]);
+            updateInfoTag();
+        }
+
+        for (let key in projectiles) {
+            let currentProjectile = projectiles[key];
+            if (currentProjectile !== undefined) {
+                let projectileRef = firebase.database().ref(`projectiles/${key}`);
+
+                moveBullet(currentProjectile, projectileRef, 5);
+                bulletCollision(currentProjectile, projectileRef);
+            }
+        }
+
+        refillCounter ++;
+        if (refillCounter >= (1000 / milliseconds)) {
+            refill();
+            refillCounter = 0;
+        }
+
+        setTimeout(loop, milliseconds);
     }
 
     function initGame() {
-        refill();       // refill ammo
+        loop();
 
         // when user moves or rotates, works better than keydown idk why
         new KeyPressListener("KeyW", () => handleArrowPress());
@@ -293,12 +305,12 @@ window.onload = function() {
                         scene.remove();
                         document.getElementById("game-container").remove();
                         document.getElementById("game-over-container").style.display = "inline-block";
+                    } else {
+                        document.getElementById("ammo-value").innerHTML = `Ammo: ${characterState.ammo}`;
                     }
 
-                    document.getElementById("ammo-value").innerHTML = `Ammo: ${characterState.ammo}`;
-                }
+                } else {
 
-                if (key !== playerId){
                     element.querySelector('#infoTagEntity').setAttribute("rotation", {
                         x: 0,
                         y: nameTagAngles[key],
