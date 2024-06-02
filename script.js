@@ -153,7 +153,6 @@ window.onload = function() {
             tableCollision(currentProjectile, projectileRef, -1.75, -2);
             tableCollision(currentProjectile, projectileRef, 1.75, 2);
 
-            // hit
             let projectileX = currentProjectile.position.x;
             let projectileY = currentProjectile.position.y;
             let projectileZ = currentProjectile.position.z;
@@ -172,18 +171,11 @@ window.onload = function() {
                         projectileZ > (playerZ - 0.275) && projectileZ < (playerZ + 0.275) &&
                         currentProjectile.from !== currentPlayerId
                     ) {
-
                         projectileRef.remove();
 
                         currentPlayerRef.update({
                             health: currentPlayer.health - 5,
                         })
-
-                        // should be 0 but idk
-                        if (currentPlayer.health <= 5){
-                            playerElements[currentPlayerId].remove();
-                            currentPlayerRef.remove();
-                        }
                     }
 
                 }
@@ -227,9 +219,14 @@ window.onload = function() {
     let milliseconds = 30;
     function loop() {
 
-        if (players[playerId] !== undefined) {
-            playerRef.set(players[playerId]);
+        let currentPlayer = players[playerId];
+        if (currentPlayer !== undefined) {
+            playerRef.set(currentPlayer);
             updateInfoTag();
+
+            if (currentPlayer.health <= 0){
+                playerRef.remove();
+            }
         }
 
         for (let key in projectiles) {
@@ -643,7 +640,6 @@ window.onload = function() {
             const id = snapshot.val().id;
             scene.remove(projectileElements[id]);
             delete projectiles[id];
-            delete projectileElements[id];
         })
 
         // name tag change
