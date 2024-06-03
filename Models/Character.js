@@ -1,5 +1,13 @@
 class Character {
-    constructor(x, y, z, rx, ry, rz, addedPlayerId, addedPlayerName, addedPlayerHealth, playerId) {
+    constructor(addedPlayer, playerId) {
+
+        let x = addedPlayer.position.x;
+        let y = addedPlayer.position.y;
+        let z = addedPlayer.position.z;
+
+        let rx = addedPlayer.rotation.x;
+        let ry = addedPlayer.rotation.y;
+        let rz = addedPlayer.rotation.z;
 
         this.characterEntity = document.createElement("a-entity");
         this.characterEntity.setAttribute("sound", {src:"#hurtSound", loop: false, volume: 18, poolSize: 10});
@@ -200,21 +208,21 @@ class Character {
 
         this.characterEntity.append(this.bodyEntity);
 
-        if (addedPlayerId !== playerId) {
+        if (addedPlayer.id !== playerId) {
             this.infoTagEntity = document.createElement("a-entity");
             this.infoTagEntity.setAttribute("id", "infoTagEntity");
             this.infoTagEntity.setAttribute("position", {x: 0, y: 0.4, z: 0});
 
             this.name = document.createElement("a-text");
             this.name.setAttribute("id", "name");
-            this.name.setAttribute("value", addedPlayerName);
+            this.name.setAttribute("value", addedPlayer.name);
             this.name.setAttribute("color", "black");
             this.name.setAttribute("position", {x: -0.3, y: 0.225, z: 0});
             this.infoTagEntity.append(this.name);
 
             this.health = document.createElement("a-text");
             this.health.setAttribute("id", "health");
-            this.health.setAttribute("value", addedPlayerHealth + "%");
+            this.health.setAttribute("value", addedPlayer.health + "%");
             this.health.setAttribute("color", "black");
             this.health.setAttribute("position", {x: -0.3, y: 0, z: 0});
             this.infoTagEntity.append(this.health);

@@ -281,18 +281,6 @@ window.onload = function() {
                 let element = playerElements[key];
 
                 if (key === playerId){
-                    document.getElementById("health-value").innerHTML = `Health: ${characterState.health}`;
-                    document.getElementById("healthbar").style.width = `${characterState.health}%`;
-                    document.getElementById("healthbar-red").style.width = `${characterState.health}%`;
-
-                    if (characterState.health > 50){
-                        document.getElementById("healthbar").style.backgroundColor = "#16A800FF";
-                    } else if (characterState.health > 25){
-                        document.getElementById("healthbar").style.backgroundColor = "#A8A500FF";
-                    } else {
-                        document.getElementById("healthbar").style.backgroundColor = "#A80000FF";
-                    }
-
                     if (characterState.health != currentHealth) {
                         playerElements[playerId].playHurtSound();
                     }
@@ -304,6 +292,17 @@ window.onload = function() {
                         document.getElementById("game-container").remove();
                         document.getElementById("game-over-container").style.display = "inline-block";
                     } else {
+                        document.getElementById("health-value").innerHTML = `Health: ${characterState.health}`;
+                        document.getElementById("healthbar").style.width = `${characterState.health}%`;
+                        document.getElementById("healthbar-red").style.width = `${characterState.health}%`;
+
+                        if (characterState.health > 50){
+                            document.getElementById("healthbar").style.backgroundColor = "#16A800FF";
+                        } else if (characterState.health > 25){
+                            document.getElementById("healthbar").style.backgroundColor = "#A8A500FF";
+                        } else {
+                            document.getElementById("healthbar").style.backgroundColor = "#A80000FF";
+                        }
                         document.getElementById("ammo-value").innerHTML = `Ammo: ${characterState.ammo}`;
                     }
 
@@ -319,18 +318,7 @@ window.onload = function() {
         })
         allPlayersRef.on("child_added", (snapshot) => {
             const addedPlayer = snapshot.val();
-            let model= new Character(
-                addedPlayer.position.x,
-                addedPlayer.position.y,
-                addedPlayer.position.z,
-                addedPlayer.rotation.x,
-                addedPlayer.rotation.y,
-                addedPlayer.rotation.z,
-                addedPlayer.id,
-                addedPlayer.name,
-                addedPlayer.health,
-                playerId
-            );
+            let model= new Character(addedPlayer, playerId);
 
             playerElements[addedPlayer.id] = model;
             scene.append(model.characterEntity);
@@ -352,15 +340,7 @@ window.onload = function() {
         })
         allProjectilesRef.on("child_added", (snapshot) => {
             const addedProjectile = snapshot.val();
-
-            let model = new Sushi(
-                addedProjectile.position.x,
-                addedProjectile.position.y,
-                addedProjectile.position.z,
-                addedProjectile.rotation.x,
-                addedProjectile.rotation.y,
-                addedProjectile.rotation.z
-            );
+            let model = new Sushi(addedProjectile);
 
             projectileElements[addedProjectile.id] = model;
             scene.appendChild(model.projectileModel);
@@ -420,5 +400,4 @@ window.onload = function() {
         var errorMessage = error.message;
         console.log(errorCode, errorMessage);
     })
-
 }
