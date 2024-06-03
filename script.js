@@ -76,8 +76,7 @@ window.onload = function() {
 
         if (hasMoved) {
             if (players[playerId].ammo > 0) {
-
-                playerElements[playerId].querySelector('#headEntity').components.sound.playSound();
+                playerElements[playerId].playThrowSound();
 
                 let position = {
                     x: rig.getAttribute("position").x,
@@ -227,6 +226,10 @@ window.onload = function() {
             if (currentPlayer.health <= 0){
                 playerRef.remove();
             }
+
+            if (rig.getAttribute("position").y < -2) {
+                location.reload();
+            }
         }
 
         for (let key in projectiles) {
@@ -293,7 +296,7 @@ window.onload = function() {
                     }
 
                     if (characterState.health != currentHealth) {
-                        playerElements[playerId].components.sound.playSound();
+                        playerElements[playerId].playHurtSound();
                     }
 
                     currentHealth = characterState.health;
@@ -307,281 +310,37 @@ window.onload = function() {
                     }
 
                 } else {
-
-                    element.querySelector('#infoTagEntity').setAttribute("rotation", {
-                        x: 0,
-                        y: nameTagAngles[key],
-                        z: 0
-                    })
-                    element.querySelector('#infoTagEntity').querySelector('#name').setAttribute("value", characterState.name);
-                    element.querySelector('#infoTagEntity').querySelector('#health').setAttribute("value", characterState.health + "%");
-
-                    element.setAttribute("position", {
-                        x: characterState.position.x,
-                        y: characterState.position.y,
-                        z: characterState.position.z,
-                    });
-                    element.querySelector('#headEntity').setAttribute("rotation", {
-                        x: characterState.rotation.x,
-                        y: characterState.rotation.y,
-                        z: characterState.rotation.z,
-                    });
-                    element.querySelector('#bodyEntity').setAttribute("rotation", {
-                        x: 0,
-                        y: characterState.rotation.y,
-                        z: characterState.rotation.z,
-                    });
+                    element.updateTagAngle(nameTagAngles[key]);
+                    element.updateTagName(characterState.name);
+                    element.updateTagHealth(characterState.health);
+                    element.updatePosition(characterState.position.x, characterState.position.y, characterState.position.z);
+                    element.updateHeadRotation(characterState.rotation.x, characterState.rotation.y, characterState.rotation.z);
+                    element.updateBodyRotation(characterState.rotation.y, characterState.rotation.z);
                 }
             }
         })
         allPlayersRef.on("child_added", (snapshot) => {
             const addedPlayer = snapshot.val();
 
-            let characterEntity = document.createElement("a-entity");
-            characterEntity.setAttribute("sound", {src:"#hurtSound", loop: false, volume: 18, poolSize: 10});
-            characterEntity.setAttribute("position", {
-                x: addedPlayer.position.x,
-                y: addedPlayer.position.y,
-                z: addedPlayer.position.z,
-            });
+            let model= new Character(
+                addedPlayer.position.x,
+                addedPlayer.position.y,
+                addedPlayer.position.z,
+                addedPlayer.rotation.x,
+                addedPlayer.rotation.y,
+                addedPlayer.rotation.z,
+                addedPlayer.id,
+                addedPlayer.name,
+                addedPlayer.health,
+                playerId
+            );
 
-            // ========================================================================================
-
-            let headEntity = document.createElement("a-entity");
-            headEntity.setAttribute("id", "headEntity");
-            headEntity.setAttribute("sound", {src:"#throwSound", loop: false, volume: 18, poolSize: 10});
-            headEntity.setAttribute("scale", {x: 0.5, y: 0.5, z: 0.5,});
-            headEntity.setAttribute("rotation", {
-                x: addedPlayer.rotation.x,
-                y: addedPlayer.rotation.y,
-                z: addedPlayer.rotation.z,
-            });
-
-            let head1 = document.createElement("a-box");
-            head1.setAttribute("color", "tan");
-            head1.setAttribute("width", 0.8);
-            head1.setAttribute("height", 0.5);
-            head1.setAttribute("shader", "flat");
-            headEntity.append(head1);
-
-            let head2 = document.createElement("a-box");
-            head2.setAttribute("color", "tan");
-            head2.setAttribute("depth", 0.8);
-            head2.setAttribute("height", 0.5);
-            head2.setAttribute("shader", "flat");
-            headEntity.append(head2);
-
-            let headCorner1 = document.createElement("a-cylinder");
-            headCorner1.setAttribute("color", "tan");
-            headCorner1.setAttribute("radius", 0.1);
-            headCorner1.setAttribute("height", 0.5);
-            headCorner1.setAttribute("shader", "flat");
-            headCorner1.setAttribute("position", {x: 0.4, y: 0, z: 0.4});
-            headEntity.append(headCorner1);
-
-            let headCorner2 = document.createElement("a-cylinder");
-            headCorner2.setAttribute("color", "tan");
-            headCorner2.setAttribute("radius", 0.1);
-            headCorner2.setAttribute("height", 0.5);
-            headCorner2.setAttribute("shader", "flat");
-            headCorner2.setAttribute("position", {x: -0.4, y: 0, z: 0.4});
-            headEntity.append(headCorner2);
-
-            let headCorner3 = document.createElement("a-cylinder");
-            headCorner3.setAttribute("color", "tan");
-            headCorner3.setAttribute("radius", 0.1);
-            headCorner3.setAttribute("height", 0.5);
-            headCorner3.setAttribute("shader", "flat");
-            headCorner3.setAttribute("position", {x: 0.4, y: 0, z: -0.4});
-            headEntity.append(headCorner3);
-
-            let headCorner4 = document.createElement("a-cylinder");
-            headCorner4.setAttribute("color", "tan");
-            headCorner4.setAttribute("radius", 0.1);
-            headCorner4.setAttribute("height", 0.5);
-            headCorner4.setAttribute("shader", "flat");
-            headCorner4.setAttribute("position", {x: -0.4, y: 0, z: -0.4});
-            headEntity.append(headCorner4);
-
-            let eye1 = document.createElement("a-cylinder");
-            eye1.setAttribute("color", "black");
-            eye1.setAttribute("radius", 0.05);
-            eye1.setAttribute("height", 0.1);
-            eye1.setAttribute("shader", "flat");
-            eye1.setAttribute("rotation", {x: 90, y: 0, z: 0});
-            eye1.setAttribute("position", {x: -0.25, y: 0.1, z: -0.46});
-            headEntity.append(eye1);
-
-            let eye2 = document.createElement("a-cylinder");
-            eye2.setAttribute("color", "black");
-            eye2.setAttribute("radius", 0.05);
-            eye2.setAttribute("height", 0.1);
-            eye2.setAttribute("shader", "flat");
-            eye2.setAttribute("rotation", {x: 90, y: 0, z: 0});
-            eye2.setAttribute("position", {x: 0.25, y: 0.1, z: -0.46});
-            headEntity.append(eye2);
-
-            let mouth = document.createElement("a-box");
-            mouth.setAttribute("color", "black");
-            mouth.setAttribute("width", 0.7);
-            mouth.setAttribute("height", 0.05);
-            mouth.setAttribute("depth", 0.1);
-            mouth.setAttribute("shader", "flat");
-            mouth.setAttribute("position", {x: 0, y: -0.05, z: -0.46});
-            headEntity.append(mouth);
-
-            let hair1 = document.createElement("a-box");
-            hair1.setAttribute("color", "black");
-            hair1.setAttribute("width", 1.05);
-            hair1.setAttribute("height", 0.3);
-            hair1.setAttribute("depth", 0.925);
-            hair1.setAttribute("shader", "flat");
-            hair1.setAttribute("position", {x: 0, y: 0.35, z: 0.0625});
-            headEntity.append(hair1);
-
-            let hair2 = document.createElement("a-box");
-            hair2.setAttribute("color", "black");
-            hair2.setAttribute("width", 0.925);
-            hair2.setAttribute("height", 0.3);
-            hair2.setAttribute("depth", 1.05);
-            hair2.setAttribute("shader", "flat");
-            hair2.setAttribute("position", {x: 0, y: 0.35, z: 0});
-            headEntity.append(hair2);
-
-            let hair3 = document.createElement("a-box");
-            hair3.setAttribute("color", "black");
-            hair3.setAttribute("width", 1.05);
-            hair3.setAttribute("height", 0.3);
-            hair3.setAttribute("depth", 0.5);
-            hair3.setAttribute("shader", "flat");
-            hair3.setAttribute("position", {x: 0, y: 0.1, z: 0.275});
-            headEntity.append(hair3);
-
-            let hairCorner1 = document.createElement("a-cylinder");
-            hairCorner1.setAttribute("color", "black");
-            hairCorner1.setAttribute("radius", 0.125);
-            hairCorner1.setAttribute("height", 0.3);
-            hairCorner1.setAttribute("depth", 0.5);
-            hairCorner1.setAttribute("shader", "flat");
-            hairCorner1.setAttribute("position", {x: 0.4, y: 0.35, z: -0.4});
-            headEntity.append(hairCorner1);
-
-            let hairCorner2 = document.createElement("a-cylinder");
-            hairCorner2.setAttribute("color", "black");
-            hairCorner2.setAttribute("radius", 0.125);
-            hairCorner2.setAttribute("height", 0.3);
-            hairCorner2.setAttribute("depth", 0.5);
-            hairCorner2.setAttribute("shader", "flat");
-            hairCorner2.setAttribute("position", {x: -0.4, y: 0.35, z: -0.4});
-            headEntity.append(hairCorner2);
-
-            characterEntity.append(headEntity);
-
-            // ========================================================================================
-
-            let bodyEntity = document.createElement("a-entity");
-            bodyEntity.setAttribute("id", "bodyEntity");
-            bodyEntity.setAttribute("scale", {x: 0.5, y: 0.5, z: 0.5});
-            bodyEntity.setAttribute("position", {x: 0, y: -0.35, z: 0});
-            bodyEntity.setAttribute("rotation", {
-                x: 0,
-                y: addedPlayer.rotation.y,
-                z: addedPlayer.rotation.z,
-            });
-
-            let body = document.createElement("a-box");
-            body.setAttribute("shader", "flat");
-            body.setAttribute("color", "#E35252");
-            body.setAttribute("width", 1.05);
-            body.setAttribute("height", 0.75);
-            body.setAttribute("depth", 1.05);
-            bodyEntity.append(body);
-
-            let apron1 = document.createElement("a-box");
-            apron1.setAttribute("shader", "flat");
-            apron1.setAttribute("color", "#D9E2E6");
-            apron1.setAttribute("width", 1);
-            apron1.setAttribute("height", 0.6);
-            apron1.setAttribute("depth", 0.05);
-            apron1.setAttribute("position", {x: 0, y: 0, z: -0.51});
-            bodyEntity.append(apron1);
-
-            let apron2 = document.createElement("a-box");
-            apron2.setAttribute("shader", "flat");
-            apron2.setAttribute("color", "#D9E2E6");
-            apron2.setAttribute("width", 1.075);
-            apron2.setAttribute("height", 0.05);
-            apron2.setAttribute("depth", 1.075);
-            bodyEntity.append(apron2);
-
-            let button1 = document.createElement("a-cylinder");
-            button1.setAttribute("shader", "flat");
-            button1.setAttribute("color", "black");
-            button1.setAttribute("radius", 0.05);
-            button1.setAttribute("height", 0.1);
-            button1.setAttribute("rotation", {x: 90, y: 0, z: 0});
-            button1.setAttribute("position", {x: 0.3, y: 0.15, z: -0.5});
-            bodyEntity.append(button1);
-
-            let button2 = document.createElement("a-cylinder");
-            button2.setAttribute("shader", "flat");
-            button2.setAttribute("color", "black");
-            button2.setAttribute("radius", 0.05);
-            button2.setAttribute("height", 0.1);
-            button2.setAttribute("rotation", {x: 90, y: 0, z: 0});
-            button2.setAttribute("position", {x: -0.3, y: 0.15, z: -0.5});
-            bodyEntity.append(button2);
-
-            let button3 = document.createElement("a-cylinder");
-            button3.setAttribute("shader", "flat");
-            button3.setAttribute("color", "black");
-            button3.setAttribute("radius", 0.05);
-            button3.setAttribute("height", 0.1);
-            button3.setAttribute("rotation", {x: 90, y: 0, z: 0});
-            button3.setAttribute("position", {x: 0.3, y: -0.15, z: -0.5});
-            bodyEntity.append(button3);
-
-            let button4 = document.createElement("a-cylinder");
-            button4.setAttribute("shader", "flat");
-            button4.setAttribute("color", "black");
-            button4.setAttribute("radius", 0.05);
-            button4.setAttribute("height", 0.1);
-            button4.setAttribute("rotation", {x: 90, y: 0, z: 0});
-            button4.setAttribute("position", {x: -0.3, y: -0.15, z: -0.5});
-            bodyEntity.append(button4);
-
-            // ========================================================================================
-
-            characterEntity.append(bodyEntity);
-
-            if (addedPlayer.id !== playerId) {
-                let infoTagEntity = document.createElement("a-entity");
-                infoTagEntity.setAttribute("id", "infoTagEntity");
-                infoTagEntity.setAttribute("position", {x: 0, y: 0.4, z: 0});
-
-                let name = document.createElement("a-text");
-                name.setAttribute("id", "name");
-                name.setAttribute("value", addedPlayer.name);
-                name.setAttribute("color", "black");
-                name.setAttribute("position", {x: -0.3, y: 0.225, z: 0});
-                infoTagEntity.append(name);
-
-                let health = document.createElement("a-text");
-                health.setAttribute("id", "health");
-                health.setAttribute("value", addedPlayer.health + "%");
-                health.setAttribute("color", "black");
-                health.setAttribute("position", {x: -0.3, y: 0, z: 0});
-                infoTagEntity.append(health);
-
-                characterEntity.append(infoTagEntity);
-            }
-
-            playerElements[addedPlayer.id] = characterEntity;
-            scene.appendChild(characterEntity);
+            playerElements[addedPlayer.id] = model;
+            scene.append(model.characterEntity);
         })
         allPlayersRef.on("child_removed", (snapshot) => {
             const id = snapshot.val().id;
-            scene.remove(playerElements[id]);
+            scene.remove(playerElements[id].characterEntity);
             delete playerElements[id];
         })
 
