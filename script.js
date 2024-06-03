@@ -25,7 +25,6 @@ window.onload = function() {
             players[playerId].position.x = rig.getAttribute("position").x;
             players[playerId].position.y = rig.getAttribute("position").y;
             players[playerId].position.z = rig.getAttribute("position").z;
-
         }
     }
 
@@ -103,8 +102,6 @@ window.onload = function() {
                 playerRef.update({
                     ammo: players[playerId].ammo - 1,
                 })
-
-                // moveBullet(uniqueId);
 
             } else {
                 rig.querySelector("a-cursor").append(alert);
@@ -233,6 +230,7 @@ window.onload = function() {
         }
 
         for (let key in projectiles) {
+
             let currentProjectile = projectiles[key];
             if (currentProjectile !== undefined) {
                 let projectileRef = firebase.database().ref(`projectiles/${key}`);
@@ -321,7 +319,6 @@ window.onload = function() {
         })
         allPlayersRef.on("child_added", (snapshot) => {
             const addedPlayer = snapshot.val();
-
             let model= new Character(
                 addedPlayer.position.x,
                 addedPlayer.position.y,
@@ -350,54 +347,27 @@ window.onload = function() {
                 const projectileState = projectiles[key];
                 let element = projectileElements[key];
 
-                element.setAttribute("position", {
-                    x: projectileState.position.x,
-                    y: projectileState.position.y,
-                    z: projectileState.position.z,
-                });
+                element.updatePosition(projectileState.position.x, projectileState.position.y, projectileState.position.z);
             }
         })
         allProjectilesRef.on("child_added", (snapshot) => {
             const addedProjectile = snapshot.val();
 
-            const projectileModel = document.createElement("a-cylinder");
-            projectileModel.setAttribute("radius", 0.05);
-            projectileModel.setAttribute("height", 0.05);
-            projectileModel.setAttribute("shader","flat");
-            projectileModel.setAttribute("color", "#1C2F22");
+            let model = new Sushi(
+                addedProjectile.position.x,
+                addedProjectile.position.y,
+                addedProjectile.position.z,
+                addedProjectile.rotation.x,
+                addedProjectile.rotation.y,
+                addedProjectile.rotation.z
+            );
 
-            const rice = document.createElement("a-cylinder");
-            rice.setAttribute("radius", 0.045);
-            rice.setAttribute("height", 0.055);
-            rice.setAttribute("shader","flat");
-            rice.setAttribute("color", "white");
-            projectileModel.append(rice)
-
-            const stuff = document.createElement("a-cylinder");
-            stuff.setAttribute("radius", 0.02);
-            stuff.setAttribute("height", 0.06);
-            stuff.setAttribute("shader","flat");
-            stuff.setAttribute("color", "#DA8463");
-            projectileModel.append(stuff)
-
-
-            projectileModel.setAttribute("position",{
-                x: addedProjectile.position.x,
-                y: addedProjectile.position.y,
-                z: addedProjectile.position.z,
-            });
-            projectileModel.setAttribute("rotation",{
-                x: rig.getAttribute("rotation").x - 90,
-                y: rig.getAttribute("rotation").y + 45,
-                z: rig.getAttribute("rotation").z,
-            });
-
-            projectileElements[addedProjectile.id] = projectileModel;
-            scene.appendChild(projectileModel);
+            projectileElements[addedProjectile.id] = model;
+            scene.appendChild(model.projectileModel);
         })
         allProjectilesRef.on("child_removed", (snapshot) => {
             const id = snapshot.val().id;
-            scene.remove(projectileElements[id]);
+            scene.remove(projectileElements[id].projectileModel);
             delete projectiles[id];
         })
 
