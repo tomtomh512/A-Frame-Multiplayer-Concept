@@ -1,5 +1,3 @@
-let hasMoved = false;
-
 window.onload = function() {
     let playerId;                       // string of who we are logged in as
     let playerRef;                      // firebase ref
@@ -15,53 +13,12 @@ window.onload = function() {
     let rig = document.getElementById("camera");
     rig.setAttribute("position", { x: getSpawnXPoint(), y: 10, z: Math.random() * (3.25 - (-3.25)) + (-3.25) });
     rig.setAttribute("rotation", { x: 0, y: Math.floor(Math.random() * 360), z: 0 });
-    rig.components["look-controls"].yawObject.rotation.y = rig.getAttribute("rotation").y * Math.PI / 180;
 
-    function handleArrowPress() {
-        if (players[playerId] !== undefined) {
-            document.getElementById("instruction-card").style.display = "none";
-            hasMoved = true;
-
-            players[playerId].position.x = rig.getAttribute("position").x;
-            players[playerId].position.y = rig.getAttribute("position").y;
-            players[playerId].position.z = rig.getAttribute("position").z;
-        }
-    }
-
-    function handleMouseMove() {
-        if (players[playerId] !== undefined) {
-            players[playerId].rotation.x = rig.getAttribute("rotation").x;
-            players[playerId].rotation.y = rig.getAttribute("rotation").y;
-            players[playerId].rotation.z = rig.getAttribute("rotation").z;
-        }
-    }
-
-    function updateInfoTag() {
-        for (let key in players){
-            let currentPlayer = players[key];
-            if (currentPlayer !== undefined && key !== playerId){
-                let id = currentPlayer.id;
-                let tagX = currentPlayer.position.x;
-                let tagZ = currentPlayer.position.z;
-
-                let userX = players[playerId].position.x;
-                let userZ = players[playerId].position.z;
-
-                let longitude = userX - tagX;
-                let latitude = userZ - tagZ;
-
-                let angle = 0;
-                if (longitude !== 0 && latitude !== 0){
-                    if (latitude > 0){
-                        angle = atanInDegrees(longitude, latitude);
-                    } else if (latitude < 0){
-                        angle = 180 + atanInDegrees(longitude, latitude);
-                    }
-                }
-
-                nameTagAngles[key] = angle;
-            }
-        }
+    try {
+        rig.components["look-controls"].yawObject.rotation.y = rig.getAttribute("rotation").y * Math.PI / 180;
+    } catch (error) {
+        console.log("error")
+        // location.reload();
     }
 
     let count = 0;
@@ -73,39 +30,37 @@ window.onload = function() {
         alert.setAttribute("scale", { x: 0.065, y: 0.065, z: 0.065 });
         alert.setAttribute("position", {x: 0.01, y: 0, z: 0.75 });
 
-        if (hasMoved) {
-            if (players[playerId].ammo > 0) {
-                playerElements[playerId].playThrowSound();
+        if (players[playerId].ammo > 0) {
+            playerElements[playerId].playThrowSound();
 
-                let position = {
-                    x: rig.getAttribute("position").x,
-                    y: rig.getAttribute("position").y,
-                    z: rig.getAttribute("position").z,
-                }
-                let rotation = {
-                    x: rig.getAttribute("rotation").x,
-                    y: rig.getAttribute("rotation").y,
-                    z: rig.getAttribute("rotation").z,
-                }
-
-                let uniqueId = playerId + count.toString();
-                const projectileRef = firebase.database().ref(`projectiles/${uniqueId}`);
-
-                projectileRef.set({
-                    id: uniqueId,
-                    from: playerId,
-                    position,
-                    rotation,
-                })
-
-                count++;
-                playerRef.update({
-                    ammo: players[playerId].ammo - 1,
-                })
-
-            } else {
-                rig.querySelector("a-cursor").append(alert);
+            let position = {
+                x: rig.getAttribute("position").x,
+                y: rig.getAttribute("position").y,
+                z: rig.getAttribute("position").z,
             }
+            let rotation = {
+                x: rig.getAttribute("rotation").x,
+                y: rig.getAttribute("rotation").y,
+                z: rig.getAttribute("rotation").z,
+            }
+
+            let uniqueId = playerId + count.toString();
+            const projectileRef = firebase.database().ref(`projectiles/${uniqueId}`);
+
+            projectileRef.set({
+                id: uniqueId,
+                from: playerId,
+                position,
+                rotation,
+            })
+
+            count++;
+            playerRef.update({
+                ammo: players[playerId].ammo - 1,
+            })
+
+        } else {
+            rig.querySelector("a-cursor").append(alert);
         }
     }
 
@@ -131,13 +86,7 @@ window.onload = function() {
         if (currentProjectile !== undefined) {
 
             // out of bounds
-            if (Math.abs(currentProjectile.position.x) >= 4 ||
-                Math.abs(currentProjectile.position.z) >= 5.5 ||
-                currentProjectile.position.y <= -0.65 ||
-                currentProjectile.position.y >= 1.75) {
-
-                projectileRef.remove();
-            }
+            outOfBoundsCollision(currentProjectile, projectileRef, 4, 5.5, -0.65, 1.75);
 
             // pillars
             pillarCollision(currentProjectile, projectileRef, 1.9,  0);
@@ -180,33 +129,42 @@ window.onload = function() {
         }
     }
 
-    function pillarCollision(currentProjectile, projectileRef, x, z) {
-        if (
-            currentProjectile.position.x >= (x - 0.25) && currentProjectile.position.x <= (x + 0.25) &&
-            currentProjectile.position.z >= (z - 0.25) && currentProjectile.position.z <= (z + 0.25)
-        ) {
-            projectileRef.remove();
-        }
-    }
-
-    function tableCollision(currentProjectile, projectileRef, x, z) {
-        if (
-            currentProjectile.position.x >= (x - 0.75) && currentProjectile.position.x <= (x + 0.75) &&
-            currentProjectile.position.y <= (-0.35 + 0.25) &&
-            currentProjectile.position.z >= (z - 0.75) && currentProjectile.position.z <= (z + 0.75)
-        ) {
-            projectileRef.remove();
-        }
-    }
-
     function refill() {
         if (players[playerId] !== undefined) {
+            let current = players[playerId].ammo
             if (players[playerId].ammo < 10){
-                players[playerId].ammo ++;
+                players[playerId].ammo = current + 1;
+            }
+            if (players[playerId].ammo > 0) {
+                rig.querySelector("a-cursor").innerHTML = '';
+            }
+        }
+    }
 
-                if (players[playerId].ammo > 0) {
-                    rig.querySelector("a-cursor").innerHTML = '';
+    function updateInfoTag() {
+        for (let key in players){
+            let currentPlayer = players[key];
+            if (currentPlayer !== undefined && key !== playerId){
+                let id = currentPlayer.id;
+                let tagX = currentPlayer.position.x;
+                let tagZ = currentPlayer.position.z;
+
+                let userX = players[playerId].position.x;
+                let userZ = players[playerId].position.z;
+
+                let longitude = userX - tagX;
+                let latitude = userZ - tagZ;
+
+                let angle = 0;
+                if (longitude !== 0 && latitude !== 0){
+                    if (latitude > 0){
+                        angle = atanInDegrees(longitude, latitude);
+                    } else if (latitude < 0){
+                        angle = 180 + atanInDegrees(longitude, latitude);
+                    }
                 }
+
+                nameTagAngles[key] = angle;
             }
         }
     }
@@ -217,6 +175,20 @@ window.onload = function() {
 
         let currentPlayer = players[playerId];
         if (currentPlayer !== undefined) {
+
+            refillCounter ++;
+            if (refillCounter >= (1000 / milliseconds)) {
+                refill();
+                refillCounter = 0;
+            }
+
+            players[playerId].position.x = rig.getAttribute("position").x;
+            players[playerId].position.y = rig.getAttribute("position").y;
+            players[playerId].position.z = rig.getAttribute("position").z;
+            players[playerId].rotation.x = rig.getAttribute("rotation").x;
+            players[playerId].rotation.y = rig.getAttribute("rotation").y;
+            players[playerId].rotation.z = rig.getAttribute("rotation").z;
+
             playerRef.set(currentPlayer);
             updateInfoTag();
 
@@ -230,7 +202,6 @@ window.onload = function() {
         }
 
         for (let key in projectiles) {
-
             let currentProjectile = projectiles[key];
             if (currentProjectile !== undefined) {
                 let projectileRef = firebase.database().ref(`projectiles/${key}`);
@@ -240,28 +211,12 @@ window.onload = function() {
             }
         }
 
-        refillCounter ++;
-        if (refillCounter >= (1000 / milliseconds)) {
-            refill();
-            refillCounter = 0;
-        }
-
         setTimeout(loop, milliseconds);
     }
 
     function initGame() {
-        loop();
 
-        // when user moves or rotates, works better than keydown idk why
-        new KeyPressListener("KeyW", () => handleArrowPress());
-        new KeyPressListener("KeyS", () => handleArrowPress());
-        new KeyPressListener("KeyA", () => handleArrowPress());
-        new KeyPressListener("KeyD", () => handleArrowPress());
-        new KeyPressListener("ArrowUp", () => handleArrowPress());
-        new KeyPressListener("ArrowDown", () => handleArrowPress());
-        new KeyPressListener("ArrowLeft", () => handleArrowPress());
-        new KeyPressListener("ArrowRight", () => handleArrowPress());
-        document.addEventListener("mousemove", handleMouseMove);
+        loop();
         new KeyHoldListener("Space", () => createBullet());
 
         // references to all players and coins
@@ -281,10 +236,10 @@ window.onload = function() {
                 let element = playerElements[key];
 
                 if (key === playerId){
+
                     if (characterState.health != currentHealth) {
                         playerElements[playerId].playHurtSound();
                     }
-
                     currentHealth = characterState.health;
 
                     if (characterState.health <= 0){
@@ -308,8 +263,8 @@ window.onload = function() {
 
                 } else {
                     element.updateTagAngle(nameTagAngles[key]);
-                    element.updateTagName(characterState.name);
                     element.updateTagHealth(characterState.health);
+                    element.updateNameTag(characterState.name);
                     element.updatePosition(characterState.position.x, characterState.position.y, characterState.position.z);
                     element.updateHeadRotation(characterState.rotation.x, characterState.rotation.y, characterState.rotation.z);
                     element.updateBodyRotation(characterState.rotation.y, characterState.rotation.z);
@@ -321,7 +276,10 @@ window.onload = function() {
             let model= new Character(addedPlayer, playerId);
 
             playerElements[addedPlayer.id] = model;
-            scene.append(model.characterEntity);
+            //if (addedPlayer.id !== playerId){
+                scene.append(model.characterEntity);
+            //}
+
         })
         allPlayersRef.on("child_removed", (snapshot) => {
             const id = snapshot.val().id;

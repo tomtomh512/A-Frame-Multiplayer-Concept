@@ -33,3 +33,28 @@ function getSpawnXPoint() {
 
     return Math.random() * (range.max - range.min) + range.min;
 }
+
+function outOfBoundsCollision(currentProjectile, projectileRef, x, z, y1, y2) {
+    if (Math.abs(currentProjectile.position.x) >= x || Math.abs(currentProjectile.position.z) >= z ||
+        currentProjectile.position.y <= y1 || currentProjectile.position.y >= y2
+    ) {
+        projectileRef.remove();
+    }
+}
+
+function pillarCollision(currentProjectile, projectileRef, x, z) {
+    if (currentProjectile.position.x >= (x - 0.25) && currentProjectile.position.x <= (x + 0.25) &&
+        currentProjectile.position.z >= (z - 0.25) && currentProjectile.position.z <= (z + 0.25)
+    ) {
+        projectileRef.remove();
+    }
+}
+
+function tableCollision(currentProjectile, projectileRef, x, z) {
+    if (currentProjectile.position.x >= (x - 0.75) && currentProjectile.position.x <= (x + 0.75) &&
+        currentProjectile.position.y <= (-0.35 + 0.25) &&
+        currentProjectile.position.z >= (z - 0.75) && currentProjectile.position.z <= (z + 0.75)
+    ) {
+        projectileRef.remove();
+    }
+}
