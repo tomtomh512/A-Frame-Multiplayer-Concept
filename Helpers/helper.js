@@ -22,16 +22,16 @@ function atanInDegrees(y, x) {
 }
 
 function getSpawnXPoint() {
-    const ranges = [
-        { min: -3.25, max: -3 },
-        { min: -0.5, max: 0.5 },
-        { min: 3, max: 3.25 }
+    let ranges = [
+        { min: -3.3, max: -3.15 },
+        { min: -0.45, max: 0.45 },
+        { min: 3.15, max: 3.3 }
     ];
 
-    const randomRangeIndex = Math.floor(Math.random() * ranges.length);
-    const range = ranges[randomRangeIndex];
-
-    return Math.random() * (range.max - range.min) + range.min;
+    let randomRangeIndex = Math.floor(Math.random() * ranges.length);
+    let range = ranges[randomRangeIndex];
+    let retVal = Math.random() * (range.max - range.min) + range.min
+    return retVal;
 }
 
 function outOfBoundsCollision(currentProjectile, projectileRef, x, z, y1, y2) {

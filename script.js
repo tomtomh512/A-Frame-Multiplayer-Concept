@@ -188,6 +188,27 @@ window.onload = function() {
             players[playerId].rotation.y = rig.getAttribute("rotation").y;
             players[playerId].rotation.z = rig.getAttribute("rotation").z;
 
+            // console.log(rig.getAttribute("position").x + ", " + rig.getAttribute("position").z);
+
+            // dynamically change the rotation of the hitbox planes of tables
+            const lonTableHitboxes = document.getElementsByClassName("lon-table-hitbox");
+            for (let hitbox of lonTableHitboxes) {
+                if (hitbox.getAttribute("position").z <= players[playerId].position.z) {
+                    hitbox.setAttribute("rotation", {x: 0, y: 180, z: 0});
+                } else {
+                    hitbox.setAttribute("rotation", {x: 0, y: 0, z: 0});
+                }
+            }
+
+            const latTableHitBoxes = document.getElementsByClassName("lat-table-hitbox");
+            for (let hitbox of latTableHitBoxes) {
+                if (hitbox.getAttribute("position").x <= players[playerId].position.x) {
+                    hitbox.setAttribute("rotation", {x: 0, y: 270, z: 0});
+                } else {
+                    hitbox.setAttribute("rotation", {x: 0, y: 90, z: 0});
+                }
+            }
+
             playerRef.set(currentPlayer);
             updateInfoTag();
 
@@ -263,7 +284,7 @@ window.onload = function() {
                 } else {
                     element.updateTagAngle(nameTagAngles[key]);
                     element.updateTagHealth(characterState.health);
-                    element.updateNameTag(characterState.name);
+                    element.updateTagName(characterState.name);
                     element.updatePosition(characterState.position.x, characterState.position.y, characterState.position.z);
                     element.updateHeadRotation(characterState.rotation.x, characterState.rotation.y, characterState.rotation.z);
                     element.updateBodyRotation(characterState.rotation.y, characterState.rotation.z);
@@ -279,6 +300,7 @@ window.onload = function() {
         })
         allPlayersRef.on("child_removed", (snapshot) => {
             const id = snapshot.val().id;
+            scene.remove(playerElements[id].characterEntity);
             scene.remove(playerElements[id].characterEntity);
             delete playerElements[id];
         })

@@ -143,10 +143,26 @@
             </a-entity>
 
             <!-- Furniture HB -->
-            <a-box static-body opacity="0" height="0.15" width="1.5" depth="1.5" position="-1.75 0.8 2"></a-box>
-            <a-box static-body opacity="0" height="0.15" width="1.5" depth="1.5" position="-1.75 0.8 -2"></a-box>
-            <a-box static-body opacity="0" height="0.15" width="1.5" depth="1.5" position="1.75 0.8 2"></a-box>
-            <a-box static-body opacity="0" height="0.15" width="1.5" depth="1.5" position="1.75 0.8 -2"></a-box>
+            <!-- (-1.75, 2), (-1.75, -2), (1.75, 2), (1.75, -2) -->
+            <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="-1.75 0 2.6" rotation="0 180 0"></a-plane>
+            <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="-1.75 0 1.4" rotation="0 180 0"></a-plane>
+            <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="-1.15 0 2" rotation="0 90 0"></a-plane>
+            <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="-2.35 0 2" rotation="0 90 0"></a-plane>
+
+            <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="-1.75 0 -1.4" rotation="0 180 0"></a-plane>
+            <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="-1.75 0 -2.6" rotation="0 180 0"></a-plane>
+            <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="-1.15 0 -2" rotation="0 90 0"></a-plane>
+            <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="-2.35 0 -2" rotation="0 90 0"></a-plane>
+
+            <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="1.75 0 2.6" rotation="0 180 0"></a-plane>
+            <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="1.75 0 1.4" rotation="0 180 0"></a-plane>
+            <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="2.35 0 2" rotation="0 90 0"></a-plane>
+            <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="1.15 0 2" rotation="0 90 0"></a-plane>
+
+            <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="1.75 0 -1.4" rotation="0 180 0"></a-plane>
+            <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="1.75 0 -2.6" rotation="0 180 0"></a-plane>
+            <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="2.35 0 -2" rotation="0 90 0"></a-plane>
+            <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="1.15 0 -2" rotation="0 90 0"></a-plane>
 
             <!-- Pillars -->
             <a-box static-body shader="flat" color="#3B3B3B" width="0.5" depth="0.5" height="2.15" position="1.9 0.425 0"></a-box>

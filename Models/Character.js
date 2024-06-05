@@ -206,26 +206,6 @@ class Character {
         this.button4.setAttribute("position", {x: -0.3, y: -0.15, z: -0.5});
         this.bodyEntity.append(this.button4);
 
-        this.nameTag = document.createElement("a-box");
-        this.nameTag.setAttribute("id", "nameTag");
-        this.nameTag.setAttribute("shader", "flat");
-        this.nameTag.setAttribute("color", "lightgrey");
-        this.nameTag.setAttribute("opacity", 0);
-        this.nameTag.setAttribute("width", 0.5);
-        this.nameTag.setAttribute("height", 0.1);
-        this.nameTag.setAttribute("depth", 0.02);
-        this.nameTag.setAttribute("position", {x: 0.2, y: 0.3, z: -0.53});
-        this.bodyEntity.append(this.nameTag);
-
-        this.name = document.createElement("a-text");
-        this.name.setAttribute("id", "name");
-        this.name.setAttribute("value", "");
-        this.name.setAttribute("color", "black");
-        this.name.setAttribute("scale", {x: 0.5, y: 0.5, z: 0.5});
-        this.name.setAttribute("position", {x: 0.45, y: 0.3, z: -0.55});
-        this.name.setAttribute("rotation", {x: 0, y: 180, z: 0});
-        this.bodyEntity.append(this.name);
-
         this.characterEntity.append(this.bodyEntity);
 
         this.front = document.createElement("a-plane");
@@ -235,7 +215,7 @@ class Character {
         this.front.setAttribute("height", 2);
         this.front.setAttribute("position", {x: 0, y: 0, z: 0.25});
         this.front.setAttribute("rotation", {x: 0, y: 180, z: 0});
-        this.characterEntity.append(this.front);
+        this.bodyEntity.append(this.front);
 
         this.left = document.createElement("a-plane");
         this.left.setAttribute("static-body", "");
@@ -244,7 +224,7 @@ class Character {
         this.left.setAttribute("height", 2);
         this.left.setAttribute("position", {x: 0.25, y: 0, z: 0});
         this.left.setAttribute("rotation", {x: 0, y: 270, z: 0});
-        this.characterEntity.append(this.left);
+        this.bodyEntity.append(this.left);
 
         this.right = document.createElement("a-plane");
         this.right.setAttribute("static-body", "");
@@ -253,7 +233,7 @@ class Character {
         this.right.setAttribute("height", 2);
         this.right.setAttribute("position", {x: -0.25, y: 0, z: 0});
         this.right.setAttribute("rotation", {x: 0, y: 90, z: 0});
-        this.characterEntity.append(this.right);
+        this.bodyEntity.append(this.right);
 
         this.back = document.createElement("a-plane");
         this.back.setAttribute("static-body", "");
@@ -262,12 +242,19 @@ class Character {
         this.back.setAttribute("height", 2);
         this.back.setAttribute("position", {x: 0, y: 0, z: -0.25});
         this.back.setAttribute("rotation", {x: 0, y: 0, z: 0});
-        this.characterEntity.append(this.back);
+        this.bodyEntity.append(this.back);
 
         if (addedPlayer.id !== playerId) {
             this.infoTagEntity = document.createElement("a-entity");
             this.infoTagEntity.setAttribute("id", "infoTagEntity");
             this.infoTagEntity.setAttribute("position", {x: 0, y: 0.4, z: 0});
+
+            this.name = document.createElement("a-text");
+            this.name.setAttribute("id", "name");
+            this.name.setAttribute("value", addedPlayer.name);
+            this.name.setAttribute("color", "black");
+            this.name.setAttribute("position", {x: -0.3, y: 0.225, z: 0});
+            this.infoTagEntity.append(this.name);
 
             this.health = document.createElement("a-text");
             this.health.setAttribute("id", "health");
@@ -284,15 +271,8 @@ class Character {
         this.characterEntity.querySelector('#infoTagEntity').setAttribute("rotation", {x: 0, y: angle, z: 0})
     }
 
-    updateNameTag(name) {
-        if (name !== ""){
-            this.characterEntity.querySelector('#bodyEntity').querySelector('#name').setAttribute("value", name);
-            this.characterEntity.querySelector('#bodyEntity').querySelector('#nameTag').setAttribute("opacity", 1);
-        } else {
-            this.characterEntity.querySelector('#bodyEntity').querySelector('#name').setAttribute("value", "");
-            this.characterEntity.querySelector('#bodyEntity').querySelector('#nameTag').setAttribute("opacity", 0);
-        }
-
+    updateTagName(name) {
+        this.characterEntity.querySelector('#infoTagEntity').querySelector('#name').setAttribute("value", name);
     }
 
     updateTagHealth(health) {
