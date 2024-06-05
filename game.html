@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-physics-system@v4.2.2/dist/aframe-physics-system.min.js"></script>
+    <title> Sushi Smackdown </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
+    <link href="css/game-page-style.css" rel="stylesheet" type="text/css" />
+    <script src="/Helpers/KeyHoldListener.js"></script>
+    <script src="/Helpers/kinema.js"></script>
+    <script src="/Helpers/helper.js"></script>
+    <script src="/Models/Character.js"></script>
+    <script src="/Models/Sushi.js"></script>
+    <script src="/script.js"></script>
+</head>
+<body>
+<div id="game-container">
+
+    <a-scene embedded xr-mode-ui="enabled: false" physics="debug: false">
+        <a-assets>
+            <audio src="Sounds/pop_0.mp3" id="throwSound" preload="auto"></audio>
+            <audio src="Sounds/pop_3.mp3" id="hurtSound" preload="auto"></audio>
+        </a-assets>
+
+        <a-entity id="cameraRig" position="0 0 0"> <!-- offset-->
+            <a-camera id="camera" kinema-body="radius: 0.5" wasd-controls="acceleration: 5; fly: false" look-controls>
+                <a-cursor raycaster="objects: [interact]" color="red"></a-cursor>
+            </a-camera>
+        </a-entity>
+
+        <a-plane static-body position="0 0 0" rotation="-270 0 0" width="8" height="8" shader="flat" opacity="0.5" color="green"></a-plane>
+        <a-sky color="#5CCCFC"></a-sky>
+
+        <!-- Furniture -->
+        <a-entity position="-1.75 0 2">
+
+            <!-- Table -->
+            <a-box color="#ABABAB" depth=1.5" height="0.05" position="0 -0.15 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth="0.8" height="0.5" width="0.05" position="0 -0.4 0" shader="flat"></a-box>
+
+            <!-- Bench -->
+            <a-box color="#3B3B3B" depth=1.5" height="0.05" width="0.25" position="0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#ABABAB" depth=1.3" height="0.055" width="0.3" position="0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="0.65 -0.5 0.7" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="0.65 -0.5 -0.7" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="0.65 -0.375 0.35" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="0.65 -0.375 -0.35" shader="flat"></a-box>
+
+            <a-box color="#3B3B3B" depth=1.5" height="0.05" width="0.25" position="-0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#ABABAB" depth=1.3" height="0.055" width="0.3" position="-0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="-0.65 -0.5 0.7" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="-0.65 -0.5 -0.7" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="-0.65 -0.375 0.35" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="-0.65 -0.375 -0.35" shader="flat"></a-box>
+
+            <!-- Light -->
+            <a-cylinder height="0.2" color="#C33737" shader="flat" radius="0.25" position="0 1 0"></a-cylinder>
+            <a-cylinder height="0.2" color="white" shader="flat" radius="0.2" position="0 0.975 0"></a-cylinder>
+            <a-cylinder height="0.5" color="#0E0E0E" shader="flat" radius="0.02" position="0 1.25 0"></a-cylinder>
+        </a-entity>
+        <a-entity position="-1.75 0 -2">
+
+            <!-- Table -->
+            <a-box color="#ABABAB" depth=1.5" height="0.05" position="0 -0.15 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth="0.8" height="0.5" width="0.05" position="0 -0.4 0" shader="flat"></a-box>
+
+            <!-- Bench -->
+            <a-box color="#3B3B3B" depth=1.5" height="0.05" width="0.25" position="0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#ABABAB" depth=1.3" height="0.055" width="0.3" position="0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="0.65 -0.5 0.7" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="0.65 -0.5 -0.7" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="0.65 -0.375 0.35" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="0.65 -0.375 -0.35" shader="flat"></a-box>
+
+            <a-box color="#3B3B3B" depth=1.5" height="0.05" width="0.25" position="-0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#ABABAB" depth=1.3" height="0.055" width="0.3" position="-0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="-0.65 -0.5 0.7" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="-0.65 -0.5 -0.7" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="-0.65 -0.375 0.35" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="-0.65 -0.375 -0.35" shader="flat"></a-box>
+
+            <!-- Light -->
+            <a-cylinder height="0.2" color="#C33737" shader="flat" radius="0.25" position="0 1 0"></a-cylinder>
+            <a-cylinder height="0.2" color="white" shader="flat" radius="0.2" position="0 0.975 0"></a-cylinder>
+            <a-cylinder height="0.5" color="#0E0E0E" shader="flat" radius="0.02" position="0 1.25 0"></a-cylinder>
+        </a-entity>
+        <a-entity position="1.75 0 2">
+
+            <!-- Table -->
+            <a-box color="#ABABAB" depth=1.5" height="0.05" position="0 -0.15 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth="0.8" height="0.5" width="0.05" position="0 -0.4 0" shader="flat"></a-box>
+
+            <!-- Bench -->
+            <a-box color="#3B3B3B" depth=1.5" height="0.05" width="0.25" position="0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#ABABAB" depth=1.3" height="0.055" width="0.3" position="0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="0.65 -0.5 0.7" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="0.65 -0.5 -0.7" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="0.65 -0.375 0.35" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="0.65 -0.375 -0.35" shader="flat"></a-box>
+
+            <a-box color="#3B3B3B" depth=1.5" height="0.05" width="0.25" position="-0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#ABABAB" depth=1.3" height="0.055" width="0.3" position="-0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="-0.65 -0.5 0.7" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="-0.65 -0.5 -0.7" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="-0.65 -0.375 0.35" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="-0.65 -0.375 -0.35" shader="flat"></a-box>
+
+            <!-- Light -->
+            <a-cylinder height="0.2" color="#C33737" shader="flat" radius="0.25" position="0 1 0"></a-cylinder>
+            <a-cylinder height="0.2" color="white" shader="flat" radius="0.2" position="0 0.975 0"></a-cylinder>
+            <a-cylinder height="0.5" color="#0E0E0E" shader="flat" radius="0.02" position="0 1.25 0"></a-cylinder>
+        </a-entity>
+        <a-entity position="1.75 0 -2">
+
+            <!-- Table -->
+            <a-box color="#ABABAB" depth=1.5" height="0.05" position="0 -0.15 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth="0.8" height="0.5" width="0.05" position="0 -0.4 0" shader="flat"></a-box>
+
+            <!-- Bench -->
+            <a-box color="#3B3B3B" depth=1.5" height="0.05" width="0.25" position="0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#ABABAB" depth=1.3" height="0.055" width="0.3" position="0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="0.65 -0.5 0.7" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="0.65 -0.5 -0.7" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="0.65 -0.375 0.35" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="0.65 -0.375 -0.35" shader="flat"></a-box>
+
+            <a-box color="#3B3B3B" depth=1.5" height="0.05" width="0.25" position="-0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#ABABAB" depth=1.3" height="0.055" width="0.3" position="-0.65 -0.4 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="-0.65 -0.5 0.7" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth=0.05" height="0.25" width="0.25" position="-0.65 -0.5 -0.7" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="-0.65 -0.375 0.35" shader="flat"></a-box>
+            <a-box color="#C33737" depth="0.2" height="0.05" width="0.2" position="-0.65 -0.375 -0.35" shader="flat"></a-box>
+
+            <!-- Light -->
+            <a-cylinder height="0.2" color="#C33737" shader="flat" radius="0.25" position="0 1 0"></a-cylinder>
+            <a-cylinder height="0.2" color="white" shader="flat" radius="0.2" position="0 0.975 0"></a-cylinder>
+            <a-cylinder height="0.5" color="#0E0E0E" shader="flat" radius="0.02" position="0 1.25 0"></a-cylinder>
+        </a-entity>
+
+        <!-- Furniture HB -->
+        <!-- (-1.75, 2), (-1.75, -2), (1.75, 2), (1.75, -2) -->
+        <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="-1.75 0 2.6" rotation="0 180 0"></a-plane>
+        <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="-1.75 0 1.4" rotation="0 180 0"></a-plane>
+        <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="-1.15 0 2" rotation="0 90 0"></a-plane>
+        <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="-2.35 0 2" rotation="0 90 0"></a-plane>
+
+        <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="-1.75 0 -1.4" rotation="0 180 0"></a-plane>
+        <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="-1.75 0 -2.6" rotation="0 180 0"></a-plane>
+        <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="-1.15 0 -2" rotation="0 90 0"></a-plane>
+        <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="-2.35 0 -2" rotation="0 90 0"></a-plane>
+
+        <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="1.75 0 2.6" rotation="0 180 0"></a-plane>
+        <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="1.75 0 1.4" rotation="0 180 0"></a-plane>
+        <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="2.35 0 2" rotation="0 90 0"></a-plane>
+        <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="1.15 0 2" rotation="0 90 0"></a-plane>
+
+        <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="1.75 0 -1.4" rotation="0 180 0"></a-plane>
+        <a-plane static-body class="lon-table-hitbox" opacity="0" height="2" width="1.2" position="1.75 0 -2.6" rotation="0 180 0"></a-plane>
+        <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="2.35 0 -2" rotation="0 90 0"></a-plane>
+        <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="1.15 0 -2" rotation="0 90 0"></a-plane>
+
+        <!-- Pillars -->
+        <a-box static-body shader="flat" color="#3B3B3B" width="0.5" depth="0.5" height="2.15" position="1.9 0.425 0"></a-box>
+        <a-box static-body shader="flat" color="#3B3B3B" width="0.5" depth="0.5" height="2.15" position="-1.9 0.425 0"></a-box>
+
+        <!-- bar -->
+        <a-entity position="0 0 4.25">
+            <a-box color="#ABABAB" depth=0.6" height="0.05" width="5.2" position="0 -0.05 0" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth="0.4" height="0.65" width="5" position="0 -0.36 0" shader="flat"></a-box>
+
+            <a-box color="#ABABAB" depth=1" height="0.05" width="0.6" position="-2.3 -0.05 0.75" shader="flat"></a-box>
+            <a-box color="#3B3B3B" depth="1.2" height="0.65" width="0.4" position="-2.3 -0.36 0.75" shader="flat"></a-box>
+        </a-entity>
+
+        <!-- Floor -->
+        <a-plane position="0 -0.65 0.75" rotation="-90 0 0" width="8" height="9.5" shader="flat" color="#D4B693"></a-plane>
+
+        <!-- Ceiling -->
+        <a-plane position="0 1.5 0" rotation="-270 0 0" width="8" height="13" shader="flat" color="#2F2F2F"></a-plane>
+
+        <!-- Bar Ceiling -->
+        <a-box color="#3B3B3B" depth="1.45" height="0.4" width="5.15" position="0 1.4 4.875" shader="flat"></a-box>
+        <a-box color="#C33737" depth="1.475" height="0.15" width="5.3" position="0 1.2 4.775" shader="flat"></a-box>
+        <a-box color="white" depth="1.385" height="0.15" width="5.2" position="0 1.18 4.85" shader="flat"></a-box>
+        <a-box color="#3B3B3B" depth="1.3" height="0.15" width="5.05" position="0 1.179 4.875" shader="flat"></a-box>
+
+        <!-- walls -->
+        <!-- front -->
+        <a-plane static-body rotation="0 0 0" color="#C5F3F0" width="8" height="2.15" position="0 0.425 -4" shader="flat"></a-plane>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="2.6 0.425 -4" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="-2.6 0.425 -4" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="1 0.425 -4" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="-1 0.425 -4" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="8" depth="0.05" height="0.05" position="0 -0.65 -4" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="8" depth="0.05" height="0.7" position="0 1.15 -4" shader="flat"></a-box>
+
+        <!-- back -->
+        <a-plane static-body rotation="0 180 0" opacity="0" width="8" height="2.15" position="0 0.425 4" shader="flat"></a-plane>
+        <a-plane rotation="0 180 0" color="#E4D8CC" width="8" height="2.15" position="0 0.425 5.5" shader="flat"></a-plane>
+        <a-box color="#3B3B3B" depth="0.05" width="8" height="0.8" position="0 -0.25 5.5" shader="flat"></a-box>
+
+        <!-- Partition -->
+        <a-plane rotation="0 180 0" color="#4F4F4F" width="5.05" height="1" position="0 0.625 5.49" shader="flat"></a-plane>
+
+        <!-- right -->
+        <a-plane static-body rotation="0 90 0" color="#E4D8CC" width="9.5" height="2.15" position="-4 0.425 0.75" shader="flat"></a-plane>
+        <a-box color="#3B3B3B" width="0.05" depth="9.5" height="0.8" position="-4 -0.25 0.75" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="-4 0.425 -4" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="-4 0.425 -1.625" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="-4 0.425 0.75" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="-4 0.425 3.125" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="-4 0.425 5.5" shader="flat"></a-box>
+
+        <!-- left -->
+        <a-plane static-body rotation="0 270 0" color="#E4D8CC" width="9.5" height="2.15" position="4 0.425 0.75" shader="flat"></a-plane>
+        <a-box color="#3B3B3B" width="0.05" depth="9.5" height="0.8" position="4 -0.25 0.75" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="4 0.425 -4" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="4 0.425 -1.625" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="4 0.425 0.75" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="4 0.425 3.125" shader="flat"></a-box>
+        <a-box color="#3B3B3B" width="0.05" depth="0.05" height="2.15" position="4 0.425 5.5" shader="flat"></a-box>
+
+    </a-scene>
+
+    <div id="enter-name">
+        <input id="player-name" maxlength="20" type="text" value = "" placeholder="Enter Name"/>
+    </div>
+
+    <div id="health-container">
+        <div id="healthbar-red"></div>
+        <div id="healthbar"></div>
+    </div>
+
+    <div id="information">
+        <div id="health-value"> Health: 100</div>
+        <div id="ammo-value"> Ammo: 10 </div>
+    </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+    // NOTE - INCLUDE YOUR FIREBASE CONFIG HERE FOR ANYTHING TO WORK:
+    const firebaseConfig = {
+        apiKey: "AIzaSyBjoeEc1VmJ7Uq-3wGPfGmdbW5UADgsxXE",
+        authDomain: "a-frame-multiplayer2.firebaseapp.com",
+        projectId: "a-frame-multiplayer2",
+        storageBucket: "a-frame-multiplayer2.appspot.com",
+        messagingSenderId: "978167930075",
+        appId: "1:978167930075:web:f871596c7619527eab40fe"
+    };
+    firebase.initializeApp(firebaseConfig);
+</script>
+
+</body>
+</html>

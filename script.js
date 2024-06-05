@@ -291,9 +291,7 @@ window.onload = function() {
             playerElements[id].characterEntity.remove();
 
             if (id === playerId) {
-                scene.remove();
-                document.getElementById("game-container").remove();
-                document.getElementById("game-over-container").style.display = "inline-block";
+                window.location.href = "game-over.html";
             }
 
             delete playerElements[id];
