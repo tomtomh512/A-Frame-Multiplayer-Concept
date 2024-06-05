@@ -255,7 +255,7 @@ class Character {
 
             this.background = document.createElement("a-plane");
             this.background.setAttribute("id", "background");
-            this.background.setAttribute("height", 0.35);
+            this.background.setAttribute("height", 0.275);
             this.background.setAttribute("width", 0.6);
             this.background.setAttribute("opacity", 0.5);
             this.background.setAttribute("color", "black");
@@ -268,7 +268,7 @@ class Character {
             this.name.setAttribute("value", addedPlayer.name);
             this.name.setAttribute("color", "white");
             this.name.setAttribute("scale", {x: 0.5, y: 0.5, z: 0.5});
-            this.name.setAttribute("position", {x: -0.275, y: 0.15, z: 0});
+            this.name.setAttribute("position", {x: -0.275, y: 0.175, z: 0});
             this.infoTagEntity.append(this.name);
 
             this.health = document.createElement("a-text");
@@ -289,7 +289,7 @@ class Character {
     updateTagName(name) {
         this.characterEntity.querySelector('#infoTagEntity').querySelector('#name').setAttribute("value", name);
         if (name === "") {
-            this.characterEntity.querySelector('#infoTagEntity').querySelector('#background').setAttribute("height", 0.35);
+            this.characterEntity.querySelector('#infoTagEntity').querySelector('#background').setAttribute("height", 0.275);
             this.characterEntity.querySelector('#infoTagEntity').querySelector('#background').setAttribute("position", {x: 0, y: 0, z: 0});
         } else {
             this.characterEntity.querySelector('#infoTagEntity').querySelector('#background').setAttribute("height", 0.4);
