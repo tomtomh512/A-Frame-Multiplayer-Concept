@@ -231,10 +231,10 @@ class Character {
         //     this.collisionBox = document.createElement("a-box");
         //     this.collisionBox.setAttribute("static-body", "");
         //     this.collisionBox.setAttribute("opacity", 0);
-        //     this.collisionBox.setAttribute("width", 1.05);
-        //     this.collisionBox.setAttribute("height", 0.1);
-        //     this.collisionBox.setAttribute("depth", 1.05);
-        //     this.collisionBox.setAttribute("position", {x: 0, y: 0.6, z: 0});
+        //     this.collisionBox.setAttribute("width", 1);
+        //     this.collisionBox.setAttribute("height", 0.15);
+        //     this.collisionBox.setAttribute("depth", 1);
+        //     this.collisionBox.setAttribute("position", {x: 0, y: 0.8, z: 0});
         //
         // this.characterEntity.append(this.collisionBox);
 
@@ -262,6 +262,9 @@ class Character {
         if (name !== ""){
             this.characterEntity.querySelector('#bodyEntity').querySelector('#name').setAttribute("value", name);
             this.characterEntity.querySelector('#bodyEntity').querySelector('#nameTag').setAttribute("opacity", 1);
+        } else {
+            this.characterEntity.querySelector('#bodyEntity').querySelector('#name').setAttribute("value", "");
+            this.characterEntity.querySelector('#bodyEntity').querySelector('#nameTag').setAttribute("opacity", 0);
         }
 
     }

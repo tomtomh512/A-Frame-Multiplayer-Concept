@@ -17,8 +17,7 @@ window.onload = function() {
     try {
         rig.components["look-controls"].yawObject.rotation.y = rig.getAttribute("rotation").y * Math.PI / 180;
     } catch (error) {
-        console.log("error")
-        // location.reload();
+        location.reload();
     }
 
     let count = 0;
@@ -276,10 +275,7 @@ window.onload = function() {
             let model= new Character(addedPlayer, playerId);
 
             playerElements[addedPlayer.id] = model;
-            //if (addedPlayer.id !== playerId){
-                scene.append(model.characterEntity);
-            //}
-
+            scene.append(model.characterEntity);
         })
         allPlayersRef.on("child_removed", (snapshot) => {
             const id = snapshot.val().id;
