@@ -4,3 +4,39 @@
     font-style: normal;
 }
 
+body {
+    /*background-image: linear-gradient(to right, black , darkslategrey, black);*/
+    /*background-attachment: fixed;*/
+    background-color: darkslategrey;
+    color: white;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    font-size: 60pt;
+    text-shadow: white 1px 1px;
+    color: #d94d4d;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+a {
+    background-color: black;
+    display: inline-block;
+    text-align: center;
+    width: 200px;
+    height: 50px;
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    transition: 0.25s;
+    font-size: 24pt;
+}
+
+a:hover {
+    background-color: #d94d4d;
+}
