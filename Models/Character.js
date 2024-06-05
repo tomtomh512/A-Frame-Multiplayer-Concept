@@ -210,6 +210,7 @@ class Character {
 
         this.front = document.createElement("a-plane");
         this.front.setAttribute("static-body", "");
+        this.front.setAttribute("class", "char-hit-box");
         this.front.setAttribute("opacity", "0");
         this.front.setAttribute("width", 0.5);
         this.front.setAttribute("height", 2);
@@ -219,6 +220,7 @@ class Character {
 
         this.left = document.createElement("a-plane");
         this.left.setAttribute("static-body", "");
+        this.left.setAttribute("class", "char-hit-box");
         this.left.setAttribute("opacity", "0");
         this.left.setAttribute("width", 0.5);
         this.left.setAttribute("height", 2);
@@ -228,6 +230,7 @@ class Character {
 
         this.right = document.createElement("a-plane");
         this.right.setAttribute("static-body", "");
+        this.right.setAttribute("class", "char-hit-box");
         this.right.setAttribute("opacity", "0");
         this.right.setAttribute("width", 0.5);
         this.right.setAttribute("height", 2);
@@ -237,6 +240,7 @@ class Character {
 
         this.back = document.createElement("a-plane");
         this.back.setAttribute("static-body", "");
+        this.back.setAttribute("class", "char-hit-box");
         this.back.setAttribute("opacity", "0");
         this.back.setAttribute("width", 0.5);
         this.back.setAttribute("height", 2);

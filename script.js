@@ -14,6 +14,7 @@ window.onload = function() {
     // rig.setAttribute("position", { x: getSpawnXPoint(), y: 10, z: Math.random() * (3.25 - (-3.25)) + (-3.25) });
     rig.setAttribute("position", { x: 0, y: 10, z: 0 });
     rig.setAttribute("rotation", { x: 0, y: Math.floor(Math.random() * 360), z: 0 });
+
     try {
         rig.components["look-controls"].yawObject.rotation.y = rig.getAttribute("rotation").y * Math.PI / 180;
     } catch (error) {
@@ -247,11 +248,11 @@ window.onload = function() {
                     }
                     currentHealth = characterState.health;
 
-                    if (characterState.health <= 0){
-                        scene.remove();
-                        document.getElementById("game-container").remove();
-                        document.getElementById("game-over-container").style.display = "inline-block";
-                    } else {
+                    document.getElementById("health-value").innerHTML = `Health: ${characterState.health}`;
+                    document.getElementById("healthbar").style.width = `${characterState.health}%`;
+                    document.getElementById("healthbar-red").style.width = `${characterState.health}%`;
+
+                    if (characterState.health > 0) {
                         document.getElementById("health-value").innerHTML = `Health: ${characterState.health}`;
                         document.getElementById("healthbar").style.width = `${characterState.health}%`;
                         document.getElementById("healthbar-red").style.width = `${characterState.health}%`;
@@ -267,6 +268,7 @@ window.onload = function() {
                     }
 
                 } else {
+
                     element.updateTagAngle(nameTagAngles[key]);
                     element.updateTagHealth(characterState.health);
                     element.updateTagName(characterState.name);
@@ -285,8 +287,15 @@ window.onload = function() {
         })
         allPlayersRef.on("child_removed", (snapshot) => {
             const id = snapshot.val().id;
-            scene.remove(playerElements[id].characterEntity);
-            scene.remove(playerElements[id].characterEntity);
+
+            playerElements[id].characterEntity.remove();
+
+            if (id === playerId) {
+                scene.remove();
+                document.getElementById("game-container").remove();
+                document.getElementById("game-over-container").style.display = "inline-block";
+            }
+
             delete playerElements[id];
         })
 
@@ -308,7 +317,7 @@ window.onload = function() {
         })
         allProjectilesRef.on("child_removed", (snapshot) => {
             const id = snapshot.val().id;
-            scene.remove(projectileElements[id].projectileModel);
+            projectileElements[id].projectileModel.remove();
             delete projectiles[id];
         })
 

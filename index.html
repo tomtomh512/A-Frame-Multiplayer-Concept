@@ -10,7 +10,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
     <script src="/Helpers/KeyHoldListener.js"></script>
-<!--    <script src="/Helpers/KeyPressListener.js"></script>-->
     <script src="/Helpers/kinema.js"></script>
     <script src="/Helpers/helper.js"></script>
     <script src="/Models/Character.js"></script>
@@ -20,7 +19,7 @@
 <body>
     <div id="game-container">
 
-        <a-scene embedded xr-mode-ui="enabled: false" physics="debug: false">
+        <a-scene embedded xr-mode-ui="enabled: false" physics="debug: true">
             <a-assets>
                 <audio src="Sounds/pop_0.mp3" id="throwSound" preload="auto"></audio>
                 <audio src="Sounds/pop_3.mp3" id="hurtSound" preload="auto"></audio>
@@ -33,7 +32,6 @@
             </a-entity>
 
             <a-plane static-body position="0 0 0" rotation="-270 0 0" width="8" height="8" shader="flat" opacity="0.5" color="green"></a-plane>
-
             <a-sky color="#5CCCFC"></a-sky>
 
             <!-- Furniture -->
