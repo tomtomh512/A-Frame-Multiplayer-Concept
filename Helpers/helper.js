@@ -34,6 +34,27 @@ function getSpawnXPoint() {
     return retVal;
 }
 
+function lonTableDyn(lonTableHitboxes, player) {
+    for (let hitbox of lonTableHitboxes) {
+        if (hitbox.getAttribute("position").z <= player.position.z) {
+            hitbox.setAttribute("rotation", {x: 0, y: 180, z: 0});
+        } else {
+            hitbox.setAttribute("rotation", {x: 0, y: 0, z: 0});
+        }
+    }
+}
+
+function latTableDyn(latTableHitBoxes, player) {
+    for (let hitbox of latTableHitBoxes) {
+        if (hitbox.getAttribute("position").x <= player.position.x) {
+            hitbox.setAttribute("rotation", {x: 0, y: 270, z: 0});
+        } else {
+            hitbox.setAttribute("rotation", {x: 0, y: 90, z: 0});
+
+        }
+    }
+}
+
 function outOfBoundsCollision(currentProjectile, projectileRef, x, z, y1, y2) {
     if (Math.abs(currentProjectile.position.x) >= x || Math.abs(currentProjectile.position.z) >= z ||
         currentProjectile.position.y <= y1 || currentProjectile.position.y >= y2

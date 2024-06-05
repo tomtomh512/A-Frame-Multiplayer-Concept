@@ -11,9 +11,9 @@ window.onload = function() {
     const playerNameInput = document.querySelector("#player-name");
 
     let rig = document.getElementById("camera");
-    rig.setAttribute("position", { x: getSpawnXPoint(), y: 10, z: Math.random() * (3.25 - (-3.25)) + (-3.25) });
+    // rig.setAttribute("position", { x: getSpawnXPoint(), y: 10, z: Math.random() * (3.25 - (-3.25)) + (-3.25) });
+    rig.setAttribute("position", { x: 0, y: 10, z: 0 });
     rig.setAttribute("rotation", { x: 0, y: Math.floor(Math.random() * 360), z: 0 });
-
     try {
         rig.components["look-controls"].yawObject.rotation.y = rig.getAttribute("rotation").y * Math.PI / 180;
     } catch (error) {
@@ -188,26 +188,11 @@ window.onload = function() {
             players[playerId].rotation.y = rig.getAttribute("rotation").y;
             players[playerId].rotation.z = rig.getAttribute("rotation").z;
 
-            // console.log(rig.getAttribute("position").x + ", " + rig.getAttribute("position").z);
-
             // dynamically change the rotation of the hitbox planes of tables
             const lonTableHitboxes = document.getElementsByClassName("lon-table-hitbox");
-            for (let hitbox of lonTableHitboxes) {
-                if (hitbox.getAttribute("position").z <= players[playerId].position.z) {
-                    hitbox.setAttribute("rotation", {x: 0, y: 180, z: 0});
-                } else {
-                    hitbox.setAttribute("rotation", {x: 0, y: 0, z: 0});
-                }
-            }
-
             const latTableHitBoxes = document.getElementsByClassName("lat-table-hitbox");
-            for (let hitbox of latTableHitBoxes) {
-                if (hitbox.getAttribute("position").x <= players[playerId].position.x) {
-                    hitbox.setAttribute("rotation", {x: 0, y: 270, z: 0});
-                } else {
-                    hitbox.setAttribute("rotation", {x: 0, y: 90, z: 0});
-                }
-            }
+            lonTableDyn(lonTableHitboxes, players[playerId]);
+            latTableDyn(latTableHitBoxes, players[playerId]);
 
             playerRef.set(currentPlayer);
             updateInfoTag();
