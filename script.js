@@ -12,7 +12,7 @@ window.onload = function() {
 
     let rig = document.getElementById("camera");
     // rig.setAttribute("position", { x: getSpawnXPoint(), y: 10, z: Math.random() * (3.25 - (-3.25)) + (-3.25) });
-    rig.setAttribute("position", { x: 0, y: 10, z: 0 });
+    rig.setAttribute("position", { x: 0, y: 15, z: 0 });
     rig.setAttribute("rotation", { x: 0, y: Math.floor(Math.random() * 360), z: 0 });
 
     try {
@@ -31,8 +31,8 @@ window.onload = function() {
         alert.setAttribute("position", {x: 0.01, y: 0, z: 0.75 });
 
         if (players[playerId].ammo > 0) {
-            playerElements[playerId].playThrowSound();
 
+            playerElements[playerId].playThrowSound();
             let position = {
                 x: rig.getAttribute("position").x,
                 y: rig.getAttribute("position").y,
@@ -66,7 +66,6 @@ window.onload = function() {
 
     function moveBullet(currentProjectile, projectileRef, magnitude) {
         if (currentProjectile !== undefined) {
-
             // velocity
             let dx = sinInDegrees(currentProjectile.rotation.y);
             let dy = sinInDegrees(currentProjectile.rotation.x);
@@ -84,7 +83,6 @@ window.onload = function() {
 
     function bulletCollision(currentProjectile, projectileRef) {
         if (currentProjectile !== undefined) {
-
             // out of bounds
             outOfBoundsCollision(currentProjectile, projectileRef, 4, 5.5, -0.65, 1.75);
 
@@ -246,11 +244,8 @@ window.onload = function() {
                     if (characterState.health != currentHealth) {
                         playerElements[playerId].playHurtSound();
                     }
-                    currentHealth = characterState.health;
 
-                    document.getElementById("health-value").innerHTML = `Health: ${characterState.health}`;
-                    document.getElementById("healthbar").style.width = `${characterState.health}%`;
-                    document.getElementById("healthbar-red").style.width = `${characterState.health}%`;
+                    currentHealth = characterState.health;
 
                     if (characterState.health > 0) {
                         document.getElementById("health-value").innerHTML = `Health: ${characterState.health}`;
@@ -268,7 +263,6 @@ window.onload = function() {
                     }
 
                 } else {
-
                     element.updateTagAngle(nameTagAngles[key]);
                     element.updateTagHealth(characterState.health);
                     element.updateTagName(characterState.name);
@@ -286,6 +280,7 @@ window.onload = function() {
             scene.append(model.characterEntity);
         })
         allPlayersRef.on("child_removed", (snapshot) => {
+            console.log("removed" + snapshot.val().id);
             const id = snapshot.val().id;
 
             playerElements[id].characterEntity.remove();
