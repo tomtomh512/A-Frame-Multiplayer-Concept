@@ -1,10 +1,8 @@
 class Character {
     constructor(addedPlayer, playerId) {
-
         let x = addedPlayer.position.x;
         let y = addedPlayer.position.y;
         let z = addedPlayer.position.z;
-
         let rx = addedPlayer.rotation.x;
         let ry = addedPlayer.rotation.y;
         let rz = addedPlayer.rotation.z;

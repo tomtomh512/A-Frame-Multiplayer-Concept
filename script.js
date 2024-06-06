@@ -272,6 +272,7 @@ window.onload = function() {
                 }
             }
         })
+
         allPlayersRef.on("child_added", (snapshot) => {
             const addedPlayer = snapshot.val();
             let model= new Character(addedPlayer, playerId);
@@ -279,6 +280,7 @@ window.onload = function() {
             playerElements[addedPlayer.id] = model;
             scene.append(model.characterEntity);
         })
+
         allPlayersRef.on("child_removed", (snapshot) => {
             console.log("removed" + snapshot.val().id);
             const id = snapshot.val().id;
@@ -301,6 +303,7 @@ window.onload = function() {
                 element.updatePosition(projectileState.position.x, projectileState.position.y, projectileState.position.z);
             }
         })
+
         allProjectilesRef.on("child_added", (snapshot) => {
             const addedProjectile = snapshot.val();
             let model = new Sushi(addedProjectile);
@@ -308,6 +311,7 @@ window.onload = function() {
             projectileElements[addedProjectile.id] = model;
             scene.appendChild(model.projectileModel);
         })
+
         allProjectilesRef.on("child_removed", (snapshot) => {
             const id = snapshot.val().id;
             projectileElements[id].projectileModel.remove();
@@ -327,8 +331,10 @@ window.onload = function() {
 
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
+
             playerId = user.uid;
             playerRef = firebase.database().ref(`players/${playerId}`);
+
             let health = 100;
             let position = {
                 x: rig.getAttribute("position").x,
