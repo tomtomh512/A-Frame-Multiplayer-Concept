@@ -12,3 +12,6 @@ Built with: A-Frame WebVR, Firebase Realtime Database
 <h2> Known Issues </h2>
 <li> Game occasionally freezes after eliminating other player </li>
 <li> Spamming shoot may completely deplete other's health </li>
+
+<h2> Future Improvements </h2>
+<li> Better sound </li>
