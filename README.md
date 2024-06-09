@@ -1,6 +1,6 @@
 <h1> A-Frame Multiplayer Concept </h1>
 
-Play: https://a-frame-multiplayer.netlify.app/ <br>
+Play: https://a-frame-multiplayer.netlify.app/
 
 Built with: A-Frame WebVR, Firebase Realtime Database
 
@@ -12,4 +12,3 @@ Built with: A-Frame WebVR, Firebase Realtime Database
 <h2> Known Issues </h2>
 <li> Game occasionally freezes after eliminating other player </li>
 <li> Spamming shoot may completely deplete other's health </li>
-<li> Character model occasionally loads at ground level *only on user side* </li>

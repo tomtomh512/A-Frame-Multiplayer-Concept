@@ -12,7 +12,7 @@ window.onload = function() {
 
     let rig = document.getElementById("camera");
     // rig.setAttribute("position", { x: getSpawnXPoint(), y: 10, z: Math.random() * (3.25 - (-3.25)) + (-3.25) });
-    rig.setAttribute("position", { x: 0, y: 15, z: 0 });
+    rig.setAttribute("position", { x: 0, y: 0, z: 0 });
     rig.setAttribute("rotation", { x: 0, y: Math.floor(Math.random() * 360), z: 0 });
 
     try {
@@ -240,7 +240,6 @@ window.onload = function() {
                 let element = playerElements[key];
 
                 if (key === playerId){
-
                     if (characterState.health != currentHealth) {
                         playerElements[playerId].playHurtSound();
                     }
@@ -282,7 +281,6 @@ window.onload = function() {
         })
 
         allPlayersRef.on("child_removed", (snapshot) => {
-            console.log("removed" + snapshot.val().id);
             const id = snapshot.val().id;
 
             playerElements[id].characterEntity.remove();

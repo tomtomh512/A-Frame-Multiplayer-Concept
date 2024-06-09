@@ -206,46 +206,6 @@ class Character {
 
         this.characterEntity.append(this.bodyEntity);
 
-        this.front = document.createElement("a-plane");
-        this.front.setAttribute("static-body", "");
-        this.front.setAttribute("class", "char-hit-box");
-        this.front.setAttribute("opacity", "0");
-        this.front.setAttribute("width", 0.5);
-        this.front.setAttribute("height", 2);
-        this.front.setAttribute("position", {x: 0, y: 0, z: 0.25});
-        this.front.setAttribute("rotation", {x: 0, y: 180, z: 0});
-        this.bodyEntity.append(this.front);
-
-        this.left = document.createElement("a-plane");
-        this.left.setAttribute("static-body", "");
-        this.left.setAttribute("class", "char-hit-box");
-        this.left.setAttribute("opacity", "0");
-        this.left.setAttribute("width", 0.5);
-        this.left.setAttribute("height", 2);
-        this.left.setAttribute("position", {x: 0.25, y: 0, z: 0});
-        this.left.setAttribute("rotation", {x: 0, y: 270, z: 0});
-        this.bodyEntity.append(this.left);
-
-        this.right = document.createElement("a-plane");
-        this.right.setAttribute("static-body", "");
-        this.right.setAttribute("class", "char-hit-box");
-        this.right.setAttribute("opacity", "0");
-        this.right.setAttribute("width", 0.5);
-        this.right.setAttribute("height", 2);
-        this.right.setAttribute("position", {x: -0.25, y: 0, z: 0});
-        this.right.setAttribute("rotation", {x: 0, y: 90, z: 0});
-        this.bodyEntity.append(this.right);
-
-        this.back = document.createElement("a-plane");
-        this.back.setAttribute("static-body", "");
-        this.back.setAttribute("class", "char-hit-box");
-        this.back.setAttribute("opacity", "0");
-        this.back.setAttribute("width", 0.5);
-        this.back.setAttribute("height", 2);
-        this.back.setAttribute("position", {x: 0, y: 0, z: -0.25});
-        this.back.setAttribute("rotation", {x: 0, y: 0, z: 0});
-        this.bodyEntity.append(this.back);
-
         if (addedPlayer.id !== playerId) {
             this.infoTagEntity = document.createElement("a-entity");
             this.infoTagEntity.setAttribute("id", "infoTagEntity");
@@ -277,6 +237,49 @@ class Character {
             this.infoTagEntity.append(this.health);
 
             this.characterEntity.append(this.infoTagEntity);
+
+            this.front = document.createElement("a-plane");
+            this.front.setAttribute("static-body", "");
+            this.front.setAttribute("class", "char-hit-box");
+            this.front.setAttribute("opacity", "0");
+            this.front.setAttribute("width", 0.5);
+            this.front.setAttribute("height", 2);
+            this.front.setAttribute("position", {x: 0, y: 0, z: 0.25});
+            this.front.setAttribute("rotation", {x: 0, y: 180, z: 0});
+            this.bodyEntity.append(this.front);
+
+            this.left = document.createElement("a-plane");
+            this.left.setAttribute("static-body", "");
+            this.left.setAttribute("class", "char-hit-box");
+            this.left.setAttribute("opacity", "0");
+            this.left.setAttribute("width", 0.5);
+            this.left.setAttribute("height", 2);
+            this.left.setAttribute("position", {x: 0.25, y: 0, z: 0});
+            this.left.setAttribute("rotation", {x: 0, y: 270, z: 0});
+            this.bodyEntity.append(this.left);
+
+            this.right = document.createElement("a-plane");
+            this.right.setAttribute("static-body", "");
+            this.right.setAttribute("class", "char-hit-box");
+            this.right.setAttribute("opacity", "0");
+            this.right.setAttribute("width", 0.5);
+            this.right.setAttribute("height", 2);
+            this.right.setAttribute("position", {x: -0.25, y: 0, z: 0});
+            this.right.setAttribute("rotation", {x: 0, y: 90, z: 0});
+            this.bodyEntity.append(this.right);
+
+            this.back = document.createElement("a-plane");
+            this.back.setAttribute("static-body", "");
+            this.back.setAttribute("class", "char-hit-box");
+            this.back.setAttribute("opacity", "0");
+            this.back.setAttribute("width", 0.5);
+            this.back.setAttribute("height", 2);
+            this.back.setAttribute("position", {x: 0, y: 0, z: -0.25});
+            this.back.setAttribute("rotation", {x: 0, y: 0, z: 0});
+            this.bodyEntity.append(this.back);
+
+        } else {
+            this.characterEntity.setAttribute("position", {x: x, y: y + 5, z: z});
         }
     }
 
