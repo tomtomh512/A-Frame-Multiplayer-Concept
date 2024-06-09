@@ -11,8 +11,8 @@ window.onload = function() {
     const playerNameInput = document.querySelector("#player-name");
 
     let rig = document.getElementById("camera");
-    // rig.setAttribute("position", { x: getSpawnXPoint(), y: 10, z: Math.random() * (3.25 - (-3.25)) + (-3.25) });
-    rig.setAttribute("position", { x: 0, y: 0, z: 0 });
+    rig.setAttribute("position", { x: getSpawnXPoint(), y: 0, z: Math.random() * (3.25 - (-3.25)) + (-3.25) });
+    // rig.setAttribute("position", { x: 0, y: 0, z: 0 });
     rig.setAttribute("rotation", { x: 0, y: Math.floor(Math.random() * 360), z: 0 });
 
     try {
@@ -305,6 +305,12 @@ window.onload = function() {
         allProjectilesRef.on("child_added", (snapshot) => {
             const addedProjectile = snapshot.val();
             let model = new Sushi(addedProjectile);
+
+            // let from = addedProjectile.id.substring(0, 28);
+            // console.log(from);
+            // if (playerElements[from] !== undefined) {
+            //     playerElements[from].playThrowSound();
+            // }
 
             projectileElements[addedProjectile.id] = model;
             scene.appendChild(model.projectileModel);
