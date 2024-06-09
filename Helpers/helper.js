@@ -34,6 +34,22 @@ function getSpawnXPoint() {
     return retVal;
 }
 
+function getCameraAngle(x, z) {
+    let longitude = 0 - x;
+    let latitude = 0 - z;
+
+    let angle = 0;
+    if (longitude !== 0 && latitude !== 0) {
+        if (latitude > 0) {
+            angle = 180 + atanInDegrees(longitude, latitude);
+        } else if (latitude < 0) {
+            angle = atanInDegrees(longitude, latitude);
+        }
+    }
+
+    return angle;
+}
+
 function lonTableDyn(lonTableHitboxes, player) {
     for (let hitbox of lonTableHitboxes) {
         if (hitbox.getAttribute("position").z <= player.position.z) {

@@ -13,7 +13,7 @@ window.onload = function() {
     let rig = document.getElementById("camera");
     rig.setAttribute("position", { x: getSpawnXPoint(), y: 0, z: Math.random() * (3.25 - (-3.25)) + (-3.25) });
     // rig.setAttribute("position", { x: 0, y: 0, z: 0 });
-    rig.setAttribute("rotation", { x: 0, y: Math.floor(Math.random() * 360), z: 0 });
+    rig.setAttribute("rotation", { x: 0, y: getCameraAngle(rig.getAttribute("position").x, rig.getAttribute("position").z), z: 0 });
 
     try {
         rig.components["look-controls"].yawObject.rotation.y = rig.getAttribute("rotation").y * Math.PI / 180;
@@ -154,10 +154,10 @@ window.onload = function() {
                 let latitude = userZ - tagZ;
 
                 let angle = 0;
-                if (longitude !== 0 && latitude !== 0){
-                    if (latitude > 0){
+                if (longitude !== 0 && latitude !== 0) {
+                    if (latitude > 0) {
                         angle = atanInDegrees(longitude, latitude);
-                    } else if (latitude < 0){
+                    } else if (latitude < 0) {
                         angle = 180 + atanInDegrees(longitude, latitude);
                     }
                 }
