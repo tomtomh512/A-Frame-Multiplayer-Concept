@@ -5,8 +5,7 @@
 }
 
 body {
-    background-image: linear-gradient(to bottom, darkslategrey, #213838);
-    background-attachment: fixed;
+    background-color: darkslategrey;
     color: white;
     text-align: center;
     display: flex;
