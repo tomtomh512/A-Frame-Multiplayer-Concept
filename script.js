@@ -10,11 +10,12 @@ window.onload = function() {
     let scene = document.querySelector("a-scene");
     const playerNameInput = document.querySelector("#player-name");
 
+    // set initial conditions of rig
     let rig = document.getElementById("camera");
     rig.setAttribute("position", { x: getSpawnXPoint(), y: 0, z: Math.random() * (3.25 - (-3.25)) + (-3.25) });
-    // rig.setAttribute("position", { x: 0, y: 0, z: 0 });
     rig.setAttribute("rotation", { x: 0, y: getCameraAngle(rig.getAttribute("position").x, rig.getAttribute("position").z), z: 0 });
 
+    // sometimes results in error
     try {
         rig.components["look-controls"].yawObject.rotation.y = rig.getAttribute("rotation").y * Math.PI / 180;
     } catch (error) {
@@ -24,6 +25,7 @@ window.onload = function() {
     let count = 0;
     function createBullet() {
 
+        // alert for player if no bullets
         let alert = document.createElement("a-text");
         alert.setAttribute("value", "No ammo");
         alert.setAttribute("color", "white");
@@ -100,6 +102,7 @@ window.onload = function() {
             let projectileY = currentProjectile.position.y;
             let projectileZ = currentProjectile.position.z;
 
+            // collision with players
             for (let playerKey in players) {
                 let currentPlayer = players[playerKey];
                 if (currentPlayer !== undefined){
@@ -115,6 +118,8 @@ window.onload = function() {
                         currentProjectile.from !== currentPlayerId
                     ) {
                         projectileRef.remove();
+
+                        playerElements[currentPlayerId].playHurtSound();
 
                         currentPlayerRef.update({
                             health: currentPlayer.health - 5,
@@ -180,6 +185,7 @@ window.onload = function() {
                 refillCounter = 0;
             }
 
+            // set player position and rotation to user position and rotation
             players[playerId].position.x = rig.getAttribute("position").x;
             players[playerId].position.y = rig.getAttribute("position").y;
             players[playerId].position.z = rig.getAttribute("position").z;
@@ -231,21 +237,14 @@ window.onload = function() {
         // when new node is added
         // remove when disconnect
 
-        let currentHealth = 100;
-
         allPlayersRef.on("value", (snapshot) => {
             players = snapshot.val() || {};
             for (const key in players) {
                 const characterState = players[key];
                 let element = playerElements[key];
 
+                // if player is the user
                 if (key === playerId){
-                    if (characterState.health != currentHealth) {
-                        playerElements[playerId].playHurtSound();
-                    }
-
-                    currentHealth = characterState.health;
-
                     if (characterState.health > 0) {
                         document.getElementById("health-value").innerHTML = `Health: ${characterState.health}`;
                         document.getElementById("healthbar").style.width = `${characterState.health}%`;
@@ -284,7 +283,6 @@ window.onload = function() {
             const id = snapshot.val().id;
 
             playerElements[id].characterEntity.remove();
-
             if (id === playerId) {
                 window.location.href = "game-over.html";
             }
@@ -306,12 +304,6 @@ window.onload = function() {
             const addedProjectile = snapshot.val();
             let model = new Sushi(addedProjectile);
 
-            // let from = addedProjectile.id.substring(0, 28);
-            // console.log(from);
-            // if (playerElements[from] !== undefined) {
-            //     playerElements[from].playThrowSound();
-            // }
-
             projectileElements[addedProjectile.id] = model;
             scene.appendChild(model.projectileModel);
         })
@@ -326,6 +318,7 @@ window.onload = function() {
         playerNameInput.addEventListener("change", (e) => {
             const newName = e.target.value;
             playerNameInput.value = newName;
+
             // only update keys given
             playerRef.update({
                 name: newName,
@@ -335,7 +328,6 @@ window.onload = function() {
 
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-
             playerId = user.uid;
             playerRef = firebase.database().ref(`players/${playerId}`);
 
@@ -364,6 +356,7 @@ window.onload = function() {
 
             //Begin the game now that we are signed in
             initGame();
+
         } else {
             // logged out
         }
