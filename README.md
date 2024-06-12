@@ -1,6 +1,6 @@
 <h1> A-Frame Multiplayer Concept </h1>
 
-Play: https://tomtomh512.github.io/A-Frame-Multiplayer-Concept/
+Play: https://a-frame-multiplayer.netlify.app/
 
 Built with: A-Frame WebVR and Firebase Realtime Database
 
