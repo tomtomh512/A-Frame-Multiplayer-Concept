@@ -2,7 +2,7 @@
 
 Play: https://a-frame-multiplayer.netlify.app/
 
-Built with: A-Frame WebVR, Firebase Realtime Database
+Built with: A-Frame WebVR and Firebase Realtime Database
 
 <h2> Instructions </h2>
 <li> Move - WASD or Arrow Keys </li>
@@ -10,8 +10,6 @@ Built with: A-Frame WebVR, Firebase Realtime Database
 <li> Gain one ammo per second </li>
 
 <h2> Known Issues </h2>
-<li> Game occasionally freezes after eliminating other player </li>
-<li> Spamming shoot may completely deplete other's health </li>
-
-<h2> Future Improvements </h2>
-<li> Better sound </li>
+<li> Game may freeze after eliminating a player </li>
+<li> Bullets may deal extra damage </li>
+<li> Minor sound issues </li>

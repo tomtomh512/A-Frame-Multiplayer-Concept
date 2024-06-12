@@ -5,9 +5,8 @@
 }
 
 body {
-    /*background-image: linear-gradient(to right, black , darkslategrey, black);*/
-    /*background-attachment: fixed;*/
-    background-color: darkslategrey;
+    background-image: linear-gradient(to bottom, darkslategrey, #213838);
+    background-attachment: fixed;
     color: white;
     text-align: center;
 }
