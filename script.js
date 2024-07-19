@@ -122,7 +122,7 @@ window.onload = function() {
                         playerElements[currentPlayerId].playHurtSound();
 
                         currentPlayerRef.update({
-                            health: currentPlayer.health - 5,
+                            health: currentPlayer.health - 2,
                         })
                     }
 
@@ -135,7 +135,7 @@ window.onload = function() {
     function refill() {
         if (players[playerId] !== undefined) {
             let current = players[playerId].ammo
-            if (players[playerId].ammo < 10){
+            if (players[playerId].ammo < 15){
                 players[playerId].ammo = current + 1;
             }
             if (players[playerId].ammo > 0) {
@@ -180,7 +180,7 @@ window.onload = function() {
         if (currentPlayer !== undefined) {
 
             refillCounter ++;
-            if (refillCounter >= (1000 / milliseconds)) {
+            if (refillCounter >= (500 / milliseconds)) {
                 refill();
                 refillCounter = 0;
             }
@@ -248,7 +248,8 @@ window.onload = function() {
                     if (characterState.health > 0) {
                         document.getElementById("health-value").innerHTML = `Health: ${characterState.health}`;
                         document.getElementById("healthbar").style.width = `${characterState.health}%`;
-                        document.getElementById("healthbar-red").style.width = `${characterState.health}%`;
+                        document.getElementById("healthbar-trailing").style.width = `${characterState.health}%`;
+                        document.getElementById("ammo-bar-count").style.width = `${characterState.ammo / 15 * 100}%`;
 
                         if (characterState.health > 50){
                             document.getElementById("healthbar").style.backgroundColor = "#16A800FF";
@@ -347,7 +348,7 @@ window.onload = function() {
                 id: playerId,
                 name: playerNameInput.value,
                 health,
-                ammo: 10,
+                ammo: 15,
                 position,
                 rotation,
             })

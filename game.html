@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
-    <link href="css/game-page-style.css" rel="stylesheet" type="text/css" />
+    <link href="styles/game-page-style.css" rel="stylesheet" type="text/css" />
     <script src="/Helpers/KeyHoldListener.js"></script>
     <script src="/Helpers/kinema.js"></script>
     <script src="/Helpers/helper.js"></script>
@@ -163,8 +163,8 @@
         <a-plane static-body class="lat-table-hitbox" opacity="0" height="2" width="1.2" position="1.15 0 -2" rotation="0 90 0"></a-plane>
 
         <!-- Pillars -->
-        <a-box static-body shader="flat" color="#3B3B3B" width="0.5" depth="0.5" height="2.15" position="1.9 0.425 0"></a-box>
-        <a-box static-body shader="flat" color="#3B3B3B" width="0.5" depth="0.5" height="2.15" position="-1.9 0.425 0"></a-box>
+        <a-box static-body shader="flat" color="#3B3B3B" width="0.5" depth="0.5" height="2.15" position="1.75 0.425 0"></a-box>
+        <a-box static-body shader="flat" color="#3B3B3B" width="0.5" depth="0.5" height="2.15" position="-1.75 0.425 0"></a-box>
 
         <!-- bar -->
         <a-entity position="0 0 4.25">
@@ -229,15 +229,23 @@
         <input id="player-name" maxlength="20" type="text" value = "" placeholder="Enter Name"/>
     </div>
 
-    <div id="health-container">
-        <div id="healthbar-red"></div>
-        <div id="healthbar"></div>
-    </div>
+    <section id="hud-container">
+        <!-- trailing damage effect, healthbar must render above healthbar-red -->
+        <section id="healthbar-container">
+            <div id="healthbar-base"></div>
+            <div id="healthbar-trailing"></div>
+            <div id="healthbar"></div>
+        </section>
 
-    <div id="information">
-        <div id="health-value"> Health: 100</div>
-        <div id="ammo-value"> Ammo: 10 </div>
-    </div>
+        <div id="information">
+            <div id="health-value"> Health: 100</div>
+            <div id="ammo-value"> Ammo: 15 </div>
+            <section id="ammo-bar-container">
+                <div id="ammo-bar-base"></div>
+                <div id="ammo-bar-count"></div>
+            </section>
+        </div>
+    </section>
 
 </div>
 
