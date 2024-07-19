@@ -29,6 +29,8 @@ window.onload = function() {
     function createBullet() {
 
         // alert for player if no bullets
+        // cannot use html element, interferes with look controls if selected
+        // add font in future a-frame update
         let alert = document.createElement("a-text");
         alert.setAttribute("value", "No ammo");
         alert.setAttribute("color", "white");

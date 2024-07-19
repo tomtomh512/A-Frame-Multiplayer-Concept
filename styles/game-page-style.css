@@ -70,6 +70,7 @@ a-scene {
 #healthbar {
     background-color: #16a800;
     top: -80px;
+    transition: 0.25s;
 }
 
 #information {
@@ -102,17 +103,19 @@ a-scene {
 }
 
 #ammo-bar-container > div {
-    height: 40px;
+    height: 30px;
     position: relative;
     border-radius: 5px;
 }
 
 #ammo-bar-base {
     background-color: rgba(0, 0, 0, 50%);
+    top: 5px;
     width: 100%;
 }
 
 #ammo-bar-count {
     background-color: white;
-    top: -40px;
+    top: -25px;
+    transition: 0.5s;
 }
