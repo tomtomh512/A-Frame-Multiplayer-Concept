@@ -1,3 +1,6 @@
+let maxAmmo = 10; // dont forget to change in game.html as well
+let refillFrequency = 0.75;
+
 window.onload = function() {
     let playerId;                       // string of who we are logged in as
     let playerRef;                      // firebase ref
@@ -135,7 +138,7 @@ window.onload = function() {
     function refill() {
         if (players[playerId] !== undefined) {
             let current = players[playerId].ammo
-            if (players[playerId].ammo < 15){
+            if (players[playerId].ammo < maxAmmo){
                 players[playerId].ammo = current + 1;
             }
             if (players[playerId].ammo > 0) {
@@ -180,7 +183,7 @@ window.onload = function() {
         if (currentPlayer !== undefined) {
 
             refillCounter ++;
-            if (refillCounter >= (500 / milliseconds)) {
+            if (refillCounter >= (refillFrequency * 1000 / milliseconds)) {
                 refill();
                 refillCounter = 0;
             }
@@ -249,7 +252,7 @@ window.onload = function() {
                         document.getElementById("health-value").innerHTML = `Health: ${characterState.health}`;
                         document.getElementById("healthbar").style.width = `${characterState.health}%`;
                         document.getElementById("healthbar-trailing").style.width = `${characterState.health}%`;
-                        document.getElementById("ammo-bar-count").style.width = `${characterState.ammo / 15 * 100}%`;
+                        document.getElementById("ammo-bar-count").style.width = `${characterState.ammo / maxAmmo * 100}%`;
 
                         if (characterState.health > 50){
                             document.getElementById("healthbar").style.backgroundColor = "#16A800FF";
@@ -348,7 +351,7 @@ window.onload = function() {
                 id: playerId,
                 name: playerNameInput.value,
                 health,
-                ammo: 15,
+                ammo: maxAmmo,
                 position,
                 rotation,
             })
