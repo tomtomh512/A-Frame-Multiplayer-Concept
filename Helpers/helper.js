@@ -71,27 +71,22 @@ function latTableDyn(latTableHitBoxes, player) {
     }
 }
 
-function outOfBoundsCollision(currentProjectile, projectileRef, x, z, y1, y2) {
-    if (Math.abs(currentProjectile.position.x) >= x || Math.abs(currentProjectile.position.z) >= z ||
+function outOfBoundsCollision(currentProjectile, projectileRef, x1, x2, z1, z2, y1, y2) {
+    if (currentProjectile.position.x <= x1 || currentProjectile.position.x >= x2 ||
+        currentProjectile.position.z <= z1 || currentProjectile.position.z >= z2 ||
         currentProjectile.position.y <= y1 || currentProjectile.position.y >= y2
     ) {
         projectileRef.remove();
+        popSound.play();
     }
 }
 
-function pillarCollision(currentProjectile, projectileRef, x, z) {
-    if (currentProjectile.position.x >= (x - 0.25) && currentProjectile.position.x <= (x + 0.25) &&
-        currentProjectile.position.z >= (z - 0.25) && currentProjectile.position.z <= (z + 0.25)
+function obstacleCollision(currentProjectile, projectileRef, x, z, length, width, height) {
+    if (currentProjectile.position.x >= (x - length / 2) && currentProjectile.position.x <= (x + length / 2) &&
+        currentProjectile.position.y <= (-0.35 + height) &&
+        currentProjectile.position.z >= (z - width / 2) && currentProjectile.position.z <= (z + width / 2)
     ) {
         projectileRef.remove();
-    }
-}
-
-function tableCollision(currentProjectile, projectileRef, x, z) {
-    if (currentProjectile.position.x >= (x - 0.75) && currentProjectile.position.x <= (x + 0.75) &&
-        currentProjectile.position.y <= (-0.35 + 0.25) &&
-        currentProjectile.position.z >= (z - 0.75) && currentProjectile.position.z <= (z + 0.75)
-    ) {
-        projectileRef.remove();
+        popSound.play();
     }
 }

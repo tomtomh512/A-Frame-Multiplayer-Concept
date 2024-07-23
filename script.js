@@ -1,6 +1,18 @@
 let maxAmmo = 10; // dont forget to change in game.html as well
 let refillFrequency = 0.75;
 
+let throwSound = new Howl({
+    src: ['Sounds/pop_0.mp3'],
+    loop: false,
+    autoplay: false,
+})
+
+let popSound = new Howl({
+    src: ['Sounds/pop_3.mp3'],
+    loop: false,
+    autoplay: false,
+})
+
 window.onload = function() {
     let playerId;                       // string of who we are logged in as
     let playerRef;                      // firebase ref
@@ -28,6 +40,8 @@ window.onload = function() {
     let count = 0;
     function createBullet() {
 
+        throwSound.play();
+
         // alert for player if no bullets
         // cannot use html element, interferes with look controls if selected
         // add font in future a-frame update
@@ -39,7 +53,6 @@ window.onload = function() {
 
         if (players[playerId].ammo > 0) {
 
-            playerElements[playerId].playThrowSound();
             let position = {
                 x: rig.getAttribute("position").x,
                 y: rig.getAttribute("position").y,
@@ -72,7 +85,7 @@ window.onload = function() {
     }
 
     function moveBullet(currentProjectile, projectileRef, magnitude) {
-        if (currentProjectile !== undefined) {
+        if (currentProjectile) {
             // velocity
             let dx = sinInDegrees(currentProjectile.rotation.y);
             let dy = sinInDegrees(currentProjectile.rotation.x);
@@ -89,19 +102,19 @@ window.onload = function() {
     }
 
     function bulletCollision(currentProjectile, projectileRef) {
-        if (currentProjectile !== undefined) {
+        if (currentProjectile) {
             // out of bounds
-            outOfBoundsCollision(currentProjectile, projectileRef, 4, 5.5, -0.65, 1.75);
+            outOfBoundsCollision(currentProjectile, projectileRef, -4, 4, -4, 5.5, -0.65, 1.75);
 
             // pillars
-            pillarCollision(currentProjectile, projectileRef, 1.9,  0);
-            pillarCollision(currentProjectile, projectileRef, -1.9,  0);
+            obstacleCollision(currentProjectile, projectileRef, 1.9, 0, 0.5, 0.5, 2.15);
+            obstacleCollision(currentProjectile, projectileRef, -1.9, 0, 0.5, 0.5, 2.15);
 
             // tables
-            tableCollision(currentProjectile, projectileRef, -1.75, 2);
-            tableCollision(currentProjectile, projectileRef, 1.75, -2);
-            tableCollision(currentProjectile, projectileRef, -1.75, -2);
-            tableCollision(currentProjectile, projectileRef, 1.75, 2);
+            obstacleCollision(currentProjectile, projectileRef, 1.75, 2, 1.5, 1.5, 0.25);
+            obstacleCollision(currentProjectile, projectileRef, -1.75, 2, 1.5, 1.5, 0.25);
+            obstacleCollision(currentProjectile, projectileRef, 1.75, -2, 1.5, 1.5, 0.25);
+            obstacleCollision(currentProjectile, projectileRef, -1.75, -2, 1.5, 1.5, 0.25);
 
             let projectileX = currentProjectile.position.x;
             let projectileY = currentProjectile.position.y;
@@ -110,7 +123,7 @@ window.onload = function() {
             // collision with players
             for (let playerKey in players) {
                 let currentPlayer = players[playerKey];
-                if (currentPlayer !== undefined){
+                if (currentPlayer && currentPlayer.position){
                     let currentPlayerId = currentPlayer.id;
                     let currentPlayerRef = firebase.database().ref(`players/${currentPlayerId}`);
                     let playerX = currentPlayer.position.x;
@@ -123,8 +136,7 @@ window.onload = function() {
                         currentProjectile.from !== currentPlayerId
                     ) {
                         projectileRef.remove();
-
-                        playerElements[currentPlayerId].playHurtSound();
+                        popSound.play();
 
                         currentPlayerRef.update({
                             health: currentPlayer.health - 2,
@@ -138,7 +150,7 @@ window.onload = function() {
     }
 
     function refill() {
-        if (players[playerId] !== undefined) {
+        if (players[playerId]) {
             let current = players[playerId].ammo
             if (players[playerId].ammo < maxAmmo){
                 players[playerId].ammo = current + 1;
@@ -152,7 +164,7 @@ window.onload = function() {
     function updateInfoTag() {
         for (let key in players){
             let currentPlayer = players[key];
-            if (currentPlayer !== undefined && key !== playerId){
+            if (currentPlayer && currentPlayer.position && key !== playerId){
                 let id = currentPlayer.id;
                 let tagX = currentPlayer.position.x;
                 let tagZ = currentPlayer.position.z;
@@ -182,7 +194,7 @@ window.onload = function() {
     function loop() {
 
         let currentPlayer = players[playerId];
-        if (currentPlayer !== undefined) {
+        if (currentPlayer) {
 
             refillCounter ++;
             if (refillCounter >= (refillFrequency * 1000 / milliseconds)) {
@@ -218,7 +230,7 @@ window.onload = function() {
 
         for (let key in projectiles) {
             let currentProjectile = projectiles[key];
-            if (currentProjectile !== undefined) {
+            if (currentProjectile) {
                 let projectileRef = firebase.database().ref(`projectiles/${key}`);
 
                 moveBullet(currentProjectile, projectileRef, 5);
@@ -267,12 +279,14 @@ window.onload = function() {
                     }
 
                 } else {
-                    element.updateTagAngle(nameTagAngles[key]);
-                    element.updateTagHealth(characterState.health);
-                    element.updateTagName(characterState.name);
-                    element.updatePosition(characterState.position.x, characterState.position.y, characterState.position.z);
-                    element.updateHeadRotation(characterState.rotation.x, characterState.rotation.y, characterState.rotation.z);
-                    element.updateBodyRotation(characterState.rotation.y, characterState.rotation.z);
+                    if (element && characterState && characterState.position) {
+                        element.updateTagAngle(nameTagAngles[key]);
+                        element.updateTagHealth(characterState.health);
+                        element.updateTagName(characterState.name);
+                        element.updatePosition(characterState.position.x, characterState.position.y, characterState.position.z);
+                        element.updateHeadRotation(characterState.rotation.x, characterState.rotation.y, characterState.rotation.z);
+                        element.updateBodyRotation(characterState.rotation.y, characterState.rotation.z);
+                    }
                 }
             }
         })
@@ -282,19 +296,22 @@ window.onload = function() {
             let model= new Character(addedPlayer, playerId);
 
             playerElements[addedPlayer.id] = model;
-            scene.append(model.characterEntity);
+            scene.appendChild(model.characterEntity);
         })
 
         allPlayersRef.on("child_removed", (snapshot) => {
             const id = snapshot.val().id;
 
-            playerElements[id].characterEntity.remove();
+            if (playerElements[id] && playerElements[id].characterEntity) {
+                scene.removeChild(playerElements[id].characterEntity);
+            }
+
             if (id === playerId) {
                 window.location.href = "game-over.html";
             }
 
             delete playerElements[id];
-        })
+        });
 
         allProjectilesRef.on("value", (snapshot) => {
             projectiles = snapshot.val() || {};
@@ -316,8 +333,8 @@ window.onload = function() {
 
         allProjectilesRef.on("child_removed", (snapshot) => {
             const id = snapshot.val().id;
-            projectileElements[id].projectileModel.remove();
-            delete projectiles[id];
+            scene.removeChild(projectileElements[id].projectileModel);
+            delete projectileElements[id];
         })
 
         // name tag change
@@ -337,7 +354,6 @@ window.onload = function() {
             playerId = user.uid;
             playerRef = firebase.database().ref(`players/${playerId}`);
 
-            let health = 100;
             let position = {
                 x: rig.getAttribute("position").x,
                 y: rig.getAttribute("position").y,
@@ -352,7 +368,7 @@ window.onload = function() {
             playerRef.set({
                 id: playerId,
                 name: playerNameInput.value,
-                health,
+                health: 100,
                 ammo: maxAmmo,
                 position,
                 rotation,
