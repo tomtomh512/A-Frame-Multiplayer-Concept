@@ -8,10 +8,12 @@ class Character {
         let rz = addedPlayer.rotation.z;
 
         this.characterEntity = document.createElement("a-entity");
+        this.characterEntity.setAttribute("sound", {src: "#hurtSound", loop: false, volume: 18, poolSize: 100});
         this.characterEntity.setAttribute("position", {x: x, y: y, z: z});
 
         this.headEntity = document.createElement("a-entity");
         this.headEntity.setAttribute("id", "headEntity");
+        this.headEntity.setAttribute("sound", {src: "#throwSound", loop: false, volume: 18, poolSize: 100});
         this.headEntity.setAttribute("scale", {x: 0.5, y: 0.5, z: 0.5,});
         this.headEntity.setAttribute("rotation", {x: rx, y: ry, z: rz});
 
@@ -310,5 +312,13 @@ class Character {
 
     updateBodyRotation(y,z) {
         this.characterEntity.querySelector('#bodyEntity').setAttribute("rotation", {x: 0, y: y, z: z});
+    }
+
+    playThrowSound() {
+        this.characterEntity.querySelector('#headEntity').components.sound.playSound();
+    }
+
+    playHurtSound() {
+        this.characterEntity.components.sound.playSound();
     }
 }

@@ -66,7 +66,6 @@ function latTableDyn(latTableHitBoxes, player) {
             hitbox.setAttribute("rotation", {x: 0, y: 270, z: 0});
         } else {
             hitbox.setAttribute("rotation", {x: 0, y: 90, z: 0});
-
         }
     }
 }
@@ -77,7 +76,6 @@ function outOfBoundsCollision(currentProjectile, projectileRef, x1, x2, z1, z2, 
         currentProjectile.position.y <= y1 || currentProjectile.position.y >= y2
     ) {
         projectileRef.remove();
-        popSound.play();
     }
 }
 
@@ -87,6 +85,5 @@ function obstacleCollision(currentProjectile, projectileRef, x, z, length, width
         currentProjectile.position.z >= (z - width / 2) && currentProjectile.position.z <= (z + width / 2)
     ) {
         projectileRef.remove();
-        popSound.play();
     }
 }

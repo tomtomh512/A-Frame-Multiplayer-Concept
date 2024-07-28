@@ -1,18 +1,6 @@
 let maxAmmo = 10; // dont forget to change in game.html as well
 let refillFrequency = 0.75;
 
-let throwSound = new Howl({
-    src: ['Sounds/pop_0.mp3'],
-    loop: false,
-    autoplay: false,
-})
-
-let popSound = new Howl({
-    src: ['Sounds/pop_3.mp3'],
-    loop: false,
-    autoplay: false,
-})
-
 window.onload = function() {
     let playerId;                       // string of who we are logged in as
     let playerRef;                      // firebase ref
@@ -40,8 +28,6 @@ window.onload = function() {
     let count = 0;
     function createBullet() {
 
-        throwSound.play();
-
         // alert for player if no bullets
         // cannot use html element, interferes with look controls if selected
         // add font in future a-frame update
@@ -52,6 +38,8 @@ window.onload = function() {
         alert.setAttribute("position", {x: 0.01, y: 0, z: 0.75 });
 
         if (players[playerId].ammo > 0) {
+
+            playerElements[playerId].playThrowSound();
 
             let position = {
                 x: rig.getAttribute("position").x,
@@ -136,7 +124,7 @@ window.onload = function() {
                         currentProjectile.from !== currentPlayerId
                     ) {
                         projectileRef.remove();
-                        popSound.play();
+                        playerElements[currentPlayerId].playHurtSound();
 
                         currentPlayerRef.update({
                             health: currentPlayer.health - 2,
