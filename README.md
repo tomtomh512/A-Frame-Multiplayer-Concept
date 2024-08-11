@@ -8,6 +8,5 @@ Play: https://a-frame-multiplayer.netlify.app/
 <li> Move - WASD or Arrow Keys </li>
 <li> Throw - SPACE </li>
 
-<h2> Known Issues </h2>
-<li> Game may freeze after eliminating a player </li>
-<li> Minor sound issues </li>
+<h2> Notes </h2>
+<li> Game may freeze after eliminating a player due to syncing issues caused by inherent lag </li>
