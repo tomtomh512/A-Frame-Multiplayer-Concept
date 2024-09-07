@@ -2,56 +2,30 @@
     font-family: "Play", sans-serif;
     font-weight: 400;
     font-style: normal;
+    font-size: 16pt;
 }
 
 body {
-    background-image: linear-gradient(to bottom, darkslategrey, #213838);
+    background-image: linear-gradient(to bottom, darkslategrey, #121f1f);
     background-attachment: fixed;
     color: white;
     text-align: center;
+    justify-content: center; /* Center horizontally */
+    align-items: center;     /* Center vertically */
 }
 
 h1 {
     font-size: 60pt;
     text-shadow: white 1px 1px;
     color: #d94d4d;
-    margin-top: 40px;
-    margin-bottom: 20px;
+    margin: 40px auto;
     font-weight: bold;
 }
 
-#main {
-    display: flex;
-}
-
-#main > div {
-    flex: 1;
-    margin: 10px;
-}
-
-#picture {
-    text-align: right;
-}
-
-#picture > img {
-    margin-right: 30px;
-}
-
-#instructions {
-    text-align: left;
+.button {
     font-size: 24pt;
-    padding-top: 20px;
-}
-
-
-#instructions > li {
-    font-size: 16pt;
-}
-
-#play-button {
     background-color: black;
     display: inline-block;
-    text-align: center;
     width: 200px;
     height: 50px;
     padding: 10px;
@@ -59,9 +33,22 @@ h1 {
     color: white;
     text-decoration: none;
     transition: 0.25s;
-    margin-bottom: 20px;
 }
 
-#play-button:hover {
+.button:hover {
     background-color: #d94d4d;
+}
+
+h2 {
+    font-size: 32pt;
+    margin-bottom: 0;
+}
+
+ul {
+    display: inline-block;
+    margin-bottom: 40px;
+}
+
+li {
+    text-align: left;
 }

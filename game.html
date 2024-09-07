@@ -9,11 +9,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap" rel="stylesheet">
     <link href="styles/game-page-style.css" rel="stylesheet" type="text/css" />
-    <script src="/Helpers/KeyHoldListener.js"></script>
-    <script src="/Helpers/kinema.js"></script>
-    <script src="/Helpers/helper.js"></script>
-    <script src="/Models/Character.js"></script>
-    <script src="/Models/Sushi.js"></script>
+    <script src="/helpers/KeyHoldListener.js"></script>
+    <script src="/helpers/kinema.js"></script>
+    <script src="/helpers/helper.js"></script>
+    <script src="/models/Character.js"></script>
+    <script src="/models/Sushi.js"></script>
     <script src="/script.js"></script>
 </head>
 <body>
@@ -21,11 +21,11 @@
 
     <a-scene embedded xr-mode-ui="enabled: false" physics="debug: false; gravity: -1; iterations: 1">
         <a-assets>
-            <audio src="Sounds/pop_0.mp3" id="throwSound" preload="auto"></audio>
-            <audio src="Sounds/pop_3.mp3" id="hurtSound" preload="auto"></audio>
+            <audio src="sounds/pop_0.mp3" id="throwSound" preload="auto"></audio>
+            <audio src="sounds/pop_3.mp3" id="hurtSound" preload="auto"></audio>
         </a-assets>
 
-        <a-entity id="cameraRig" position="0 0 0"> <!-- offset-->
+        <a-entity zid="cameraRig" position="0 0 0"> <!-- offset-->
             <a-camera id="camera" kinema-body="radius: 0.5" wasd-controls="acceleration: 5; fly: false" look-controls>
                 <a-cursor raycaster="objects: [interact]" color="red"></a-cursor>
             </a-camera>

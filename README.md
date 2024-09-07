@@ -1,12 +1,20 @@
 <h1> A-Frame Multiplayer Concept </h1>
 
-A Firebase Realtime Database alongside A-Frame WebVR to construct a multiplayer, virtual 3D environment where users can engage in a FPS experience with other users in real-time synchronization.
+A web multiplayer FPS game
 
 Play: https://a-frame-multiplayer.netlify.app/
 
+<img src="demo_4.gif">
+
+<h2>Technologies Used</h2>
+<ul>
+  <li> Firebase Realtime Database to synchronize player and environment changes </li>
+  <li> A-Frame WebVR to construct 3D environment </li>
+</ul>
+
 <h2> Instructions </h2>
 <li> Move - WASD or Arrow Keys </li>
-<li> Throw - SPACE </li>
+<li> Throw Sushi - SPACE </li>
 
-<h2> Notes </h2>
-<li> Game may freeze after eliminating a player due to syncing issues caused by inherent lag </li>
+<h2> Note </h2>
+<li> The game may freeze after a player is eliminated due to lag-related sync issues </li>
