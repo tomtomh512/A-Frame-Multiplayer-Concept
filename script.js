@@ -127,7 +127,7 @@ window.onload = function() {
                         playerElements[currentPlayerId].playHurtSound();
 
                         currentPlayerRef.update({
-                            health: currentPlayer.health - 2,
+                            health: currentPlayer.health - 5,
                         })
                     }
 
